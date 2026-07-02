@@ -229,8 +229,9 @@ async function fetchAnimeDetailBrowser(slug, context) {
       const n = li.querySelector('.num-epi')?.textContent?.trim() || '';
       const p = n.split(/[xX]/);
       const link = (li.querySelector('.lnk-blk')?.getAttribute('href') || li.querySelector('a[href*="/episode/"]')?.getAttribute('href') || '').split('/').filter(Boolean).pop() || '';
-      const thumb = li.querySelector('img')?.getAttribute('src') || '';
-      return { season: parseInt(p[0]) || 1, number: parseInt(p[1]) || 0, title: li.querySelector('.entry-title')?.textContent?.trim() || `Episode ${p[1]}`, thumbnail: hqImage(thumb), slug: link };
+      let thumb = li.querySelector('img')?.getAttribute('src') || '';
+      thumb = thumb.replace(/-?\d+x\d+/, '').replace(/-scaled/, '');
+      return { season: parseInt(p[0]) || 1, number: parseInt(p[1]) || 0, title: li.querySelector('.entry-title')?.textContent?.trim() || `Episode ${p[1]}`, thumbnail: thumb, slug: link };
     })).catch(() => []);
 
     const seasons = [];
