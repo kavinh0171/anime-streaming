@@ -925,13 +925,21 @@ const App = {
     // Try to get a fresh HLS URL from the server API (always returns non-expired URL)
     try {
       const resp = await fetch('/api/video-source/' + epId);
+      console.log('Video refresh API:', resp.status, resp.statusText);
       if (resp.ok) {
         const data = await resp.json();
+        console.log('Fresh HLS URL:', data.source_url?.substring(0, 60));
         videoUrl = data.source_url;
         sourceType = data.source_type || 'hls';
+      } else {
+        const err = await resp.text().catch(() => '');
+        console.log('API error:', err.substring(0, 100));
       }
-    } catch (e) {}
-    if (!videoUrl) videoUrl = fallbackUrl;
+    } catch (e) { console.log('API fetch error:', e.message); }
+    if (!videoUrl) {
+      console.log('Using fallback URL:', fallbackUrl?.substring(0, 60));
+      videoUrl = fallbackUrl;
+    }
 
     WatchHistory.add({
       slug, animeTitle: anime.title, episodeId: epId,
