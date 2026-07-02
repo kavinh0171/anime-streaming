@@ -65,53 +65,49 @@ async function processBatch(items, browser) {
   return { results, errors };
 }
 
-async function scrapeFull() {
-  const log = await db.logScrapingStart('full');
+async function withBrowser(fn) {
   const { chromium } = require('playwright');
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
+  const ctx = await browser.newContext({
+    viewport: { width: 1920, height: 1080 },
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+  });
+  await ctx.addInitScript(() => { Object.defineProperty(navigator, 'webdriver', { get: () => undefined }); });
+  try { return await fn(ctx); } finally { await browser.close(); }
+}
 
-  logger.info('=== Starting FULL scrape (ToonStream) ===');
+async function scrapeFull() {
+  const log = await db.logScrapingStart('full');
+  logger.info('=== Starting FULL scrape ===');
   try {
-    const totalResults = await toonstream.scrapeFull(browser);
+    const totalResults = await withBrowser(ctx => toonstream.scrapeFull(ctx));
     await db.logScrapingComplete(log.id, totalResults, null);
     logger.info(`=== FULL scrape complete: ${totalResults} added/updated ===`);
   } catch (err) {
     logger.error('Full scrape failed:', err);
     await db.logScrapingComplete(log.id, 0, [err.message]);
-  } finally {
-    await browser.close();
   }
 }
 
 async function scrapeToonstreamOnly() {
   const log = await db.logScrapingStart('toonstream');
-  const { chromium } = require('playwright');
-  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
-  logger.info('=== Starting ToonStream full scan (all pages) ===');
-  const added = await toonstream.scrapeFull(browser);
-  await browser.close();
+  logger.info('=== Starting ToonStream full scan ===');
+  const added = await withBrowser(ctx => toonstream.scrapeFull(ctx));
   await db.logScrapingComplete(log.id, added, null);
-  logger.info(`=== ToonStream full scan complete: ${added} added/updated ===`);
+  logger.info(`=== Done: ${added} added/updated ===`);
 }
 
 async function scrapeIncremental() {
   const log = await db.logScrapingStart('incremental');
-  const { chromium } = require('playwright');
-  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
-
   skippedCount = 0;
-  logger.info('=== Starting INCREMENTAL scrape (ToonStream) ===');
-
-  let totalItems = 0;
+  logger.info('=== Starting INCREMENTAL scrape ===');
   try {
-    totalItems = await toonstream.scrapeIncremental(browser);
+    const totalItems = await withBrowser(ctx => toonstream.scrapeIncremental(ctx));
     await db.logScrapingComplete(log.id, totalItems, null);
-    logger.info(`=== Incremental scrape complete: ${totalItems} added/updated ===`);
+    logger.info(`=== Incremental done: ${totalItems} added/updated ===`);
   } catch (err) {
     logger.error('Incremental scrape failed:', err);
     await db.logScrapingComplete(log.id, 0, [err.message]);
-  } finally {
-    await browser.close();
   }
 }
 
