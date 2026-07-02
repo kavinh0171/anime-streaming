@@ -234,22 +234,36 @@ async function fetchAnimeDetailBrowser(slug, context) {
     })).catch(() => []);
 
     const seasonBtns = await page.$$('.choose-season .aa-cnt li a');
+    logger.info(`  Browser: ${seasonBtns.length} season btns, title="${title}"`);
     const seasons = [];
     if (seasonBtns.length === 0) {
       const eps = await extractEps();
+      logger.info(`  Browser: no season btns, ${eps.length} eps from episode_by_temp`);
       if (eps.length > 0) seasons.push({ season_number: 1, postId: '', episodes: eps });
     } else {
-      // Open the season dropdown (force-click because it might be partially hidden)
-      const toggleBtn = await page.$('.choose-season .aa-lnk');
-      if (toggleBtn) await toggleBtn.click({ force: true });
+      // Open the season dropdown
+      await page.evaluate(() => {
+        const btn = document.querySelector('.choose-season .aa-lnk');
+        if (btn) btn.click();
+      });
       await page.waitForTimeout(500);
       for (const btn of seasonBtns) {
         const snum = parseInt(await btn.getAttribute('data-season')) || 1;
         const postId = await btn.getAttribute('data-post') || '';
-        // Force-click the season button (bypasses Playwright's visibility check)
-        await btn.click({ force: true });
+        logger.info(`  Browser: clicking season ${snum}`);
+        // Click via evaluate (native click, no visibility check)
+        await page.evaluate((n) => {
+          const links = document.querySelectorAll('.choose-season .aa-cnt li a');
+          for (const a of links) {
+            if (parseInt(a.getAttribute('data-season')) === n) {
+              a.click();
+              break;
+            }
+          }
+        }, snum);
         await page.waitForTimeout(2000);
         const eps = await extractEps();
+        logger.info(`  Browser: season ${snum} → ${eps.length} eps (first: ${eps[0]?.num || 'none'})`);
         if (eps.length > 0) seasons.push({ season_number: snum, postId, episodes: eps });
       }
     }
