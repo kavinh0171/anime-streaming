@@ -13,12 +13,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
+      - run: npm install
         working-directory: scraper
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install chromium
         working-directory: scraper
       - run: node src/index.js --type=incremental
         working-directory: scraper
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          TOONPLAY_BASE: ${{ secrets.TOONPLAY_BASE }}
