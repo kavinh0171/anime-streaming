@@ -203,6 +203,28 @@ async function fetchAnimeDetail(slug, context, isMovie) {
       }
       // No episodes found — let caller decide (maybe a movie)
     }
+
+    // --- Movie handling: extract embedded player directly from movie page ---
+    if (seasons.length === 0 && isMovie) {
+      const movieEmbed = $('#aa-options .video.aa-tb.hdd.on iframe[src], #aa-options iframe[src*="trembed"]').first().attr('src');
+      if (movieEmbed) {
+        try {
+          const embedHtml = await fetchText(movieEmbed);
+          const $$ = cheerio.load(embedHtml);
+          const playerUrl = $$('.Video iframe[src*="as-cdn"], iframe[src*="as-cdn"]').first().attr('src');
+          if (playerUrl) {
+            const episodes = [{
+              season: 1, number: 1, title: title, thumbnail: image, slug: '', sourceUrl: playerUrl
+            }];
+            seasons.push({ season_number: 1, postId: '', episodes });
+            logger.info(`  1 movie source`);
+          }
+        } catch (e) {
+          logger.warn(`  Movie source extract fail: ${e.message}`);
+        }
+      }
+    }
+
     return { title, slug, image, description, year, genres, seasons };
   } catch (err) {
     logger.warn(`fetchAnimeDetail fail: ${err.message}`);
@@ -351,6 +373,7 @@ async function processAnimeItem(item, context, force) {
         for (const ep of season.episodes) {
           const { data: existingEp } = await supabase.from('episodes').select('id').eq('anime_id', existing.id).eq('season_id', existingSeason.id).eq('episode_number', ep.number).maybeSingle();
           if (!existingEp) continue;
+          if (ep.sourceUrl) { try { await supabase.from('video_sources').upsert({ episode_id: existingEp.id, source_url: ep.sourceUrl, source_type: 'embed', quality: 'HD', language: 'sub' }, { onConflict: 'episode_id,source_url' }); } catch {} continue; }
           const { data: hasVs } = await supabase.from('video_sources').select('id').eq('episode_id', existingEp.id).limit(1);
           if (!hasVs?.length) epRecords.push({ id: existingEp.id, slug: ep.slug, number: ep.number });
         }
@@ -367,8 +390,8 @@ async function processAnimeItem(item, context, force) {
       for (const ep of season.episodes) {
         const { data: existingEp } = await supabase.from('episodes').select('id').eq('anime_id', existing.id).eq('season_id', sr.id).eq('episode_number', ep.number).maybeSingle();
         if (existingEp) continue;
-        const epRecord = await db.upsertEpisode({ anime_id: existing.id, season_id: sr.id, episode_number: ep.number, title: ep.title, thumbnail: ep.thumbnail, source_url: `${BASE}/episode/${ep.slug}/` });
-        if (epRecord) newEpRecords.push({ ...epRecord, slug: ep.slug });
+        const epRecord = await db.upsertEpisode({ anime_id: existing.id, season_id: sr.id, episode_number: ep.number, title: ep.title, thumbnail: ep.thumbnail, source_url: ep.slug ? `${BASE}/episode/${ep.slug}/` : (ep.sourceUrl || '') });
+        if (epRecord) { newEpRecords.push({ ...epRecord, slug: ep.slug }); if (ep.sourceUrl) { try { await supabase.from('video_sources').upsert({ episode_id: epRecord.id, source_url: ep.sourceUrl, source_type: 'embed', quality: 'HD', language: 'sub' }, { onConflict: 'episode_id,source_url' }); } catch {} } }
       }
       await supabase.from('seasons').update({ episode_count: season.episodes.length }).eq('id', sr.id);
       if (newEpRecords.length > 0) { logger.info(`  Fetching sources for ${newEpRecords.length} new eps`); await addVideoSourcesForEpisodes(newEpRecords, context); }
@@ -387,7 +410,7 @@ async function processAnimeItem(item, context, force) {
     title: detail.title, slug: `ts-${item.slug}`, description: detail.description || '',
     cover_image: detail.image || item.image || '', thumbnail: detail.image || item.image || '',
     rating: item.rating || 0, release_year: detail.year, status: 'ongoing', studio: '', type: 'series',
-    total_episodes: totalEps, duration: '', source_url: `${BASE}/series/${item.slug}`,
+    total_episodes: totalEps, duration: '',     source_url: item.isMovie ? `${BASE}/movies/${item.slug}` : `${BASE}/series/${item.slug}`,
   });
   if (!anime) return null;
   for (const g of detail.genres) {
@@ -399,8 +422,8 @@ async function processAnimeItem(item, context, force) {
     if (!sr) continue;
     const epRecords = [];
     for (const ep of season.episodes) {
-      const epRecord = await db.upsertEpisode({ anime_id: anime.id, season_id: sr.id, episode_number: ep.number, title: ep.title, thumbnail: ep.thumbnail, source_url: `${BASE}/episode/${ep.slug}/` });
-      if (epRecord) epRecords.push({ ...epRecord, slug: ep.slug });
+      const epRecord = await db.upsertEpisode({ anime_id: anime.id, season_id: sr.id, episode_number: ep.number, title: ep.title, thumbnail: ep.thumbnail, source_url: ep.slug ? `${BASE}/episode/${ep.slug}/` : (ep.sourceUrl || '') });
+      if (epRecord) { epRecords.push({ ...epRecord, slug: ep.slug }); if (ep.sourceUrl) { try { await supabase.from('video_sources').upsert({ episode_id: epRecord.id, source_url: ep.sourceUrl, source_type: 'embed', quality: 'HD', language: 'sub' }, { onConflict: 'episode_id,source_url' }); } catch {} } }
     }
     if (epRecords.length > 0) await addVideoSourcesForEpisodes(epRecords, context);
   }
