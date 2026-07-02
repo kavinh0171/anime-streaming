@@ -233,41 +233,54 @@ async function fetchAnimeDetailBrowser(slug, context) {
       return { season: parseInt(p[0]) || 1, number: parseInt(p[1]) || 0, title: li.querySelector('.entry-title')?.textContent?.trim() || `Episode ${p[1]}`, thumbnail: hqImage(thumb), slug: link };
     })).catch(() => []);
 
-    // Debug: check if #episode_by_temp exists and has LIs right after page load
-    const dbg = await page.evaluate(() => {
-      const el = document.getElementById('episode_by_temp');
-      return { exists: !!el, childCount: el ? el.children.length : 0, html: el ? el.innerHTML.substring(0, 200) : 'N/A' };
-    });
-    logger.info(`  Browser: #episode_by_temp exists=${dbg.exists}, childCount=${dbg.childCount}, html=${dbg.html.substring(0, 100)}`);
-
-    const seasonBtns = await page.$$('.choose-season .aa-cnt li a');
-    logger.info(`  Browser: ${seasonBtns.length} season btns`);
     const seasons = [];
-    if (seasonBtns.length === 0) {
-      const eps = await extractEps();
-      if (eps.length > 0) seasons.push({ season_number: 1, postId: '', episodes: eps });
+
+    // 1) Grab initial episodes BEFORE any interaction (default season shown on page load)
+    const initialEps = await extractEps();
+
+    // 2) Find season buttons
+    const seasonBtns = await page.$$('.choose-season .aa-cnt li a');
+    const seasonCount = seasonBtns.length;
+
+    if (seasonCount === 0) {
+      // Single-season: use initial episodes
+      if (initialEps.length > 0) seasons.push({ season_number: 1, postId: '', episodes: initialEps });
     } else {
-      // Open the season dropdown
-      await page.evaluate(() => {
-        const btn = document.querySelector('.choose-season .aa-lnk');
-        if (btn) btn.click();
-      });
-      await page.waitForTimeout(500);
+      // Multi-season: determine the season number shown by default
+      const toggleText = await page.$eval('.choose-season .aa-lnk', el => el.textContent?.trim() || '').catch(() => '');
+      const defaultSeason = parseInt(toggleText.replace(/[^0-9]/g, '')) || 1;
+
+      // Collect all season info (number, postId)
+      const allSeasons = [];
       for (const btn of seasonBtns) {
-        const snum = parseInt(await btn.getAttribute('data-season')) || 1;
-        const postId = await btn.getAttribute('data-post') || '';
+        allSeasons.push({
+          season_number: parseInt(await btn.getAttribute('data-season')) || 1,
+          postId: await btn.getAttribute('data-post') || ''
+        });
+      }
+
+      // Use initial episodes as the default season
+      if (initialEps.length > 0) {
+        const defaultInfo = allSeasons.find(s => s.season_number === defaultSeason) || allSeasons[0];
+        seasons.push({ season_number: defaultSeason, postId: defaultInfo.postId, episodes: initialEps });
+      }
+
+      // Click remaining seasons that we haven't extracted yet
+      const remaining = allSeasons.filter(s => s.season_number !== defaultSeason);
+      for (const s of remaining) {
+        // Click season via dispatchEvent (more reliable for AJAX triggers)
         await page.evaluate((n) => {
           const links = document.querySelectorAll('.choose-season .aa-cnt li a');
           for (const a of links) {
             if (parseInt(a.getAttribute('data-season')) === n) {
-              a.click();
+              a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
               break;
             }
           }
-        }, snum);
-        await page.waitForTimeout(2000);
+        }, s.season_number);
+        await page.waitForTimeout(3000);
         const eps = await extractEps();
-        if (eps.length > 0) seasons.push({ season_number: snum, postId, episodes: eps });
+        if (eps.length > 0) seasons.push({ season_number: s.season_number, postId: s.postId, episodes: eps });
       }
     }
     return { title, slug, image, description, year, genres, seasons };
