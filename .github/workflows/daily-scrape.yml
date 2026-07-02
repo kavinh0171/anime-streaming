@@ -21,5 +21,5 @@ jobs:
         working-directory: scraper
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_KEY }}
           TOONPLAY_BASE: ${{ secrets.TOONPLAY_BASE }}
