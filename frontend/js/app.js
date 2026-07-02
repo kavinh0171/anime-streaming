@@ -231,10 +231,8 @@ const App = {
     const params = new URLSearchParams(window.location.search);
     const typeFilter = params.get('type') || '';
     document.querySelectorAll('.nav a, .drawer-nav a, .bottom-nav a').forEach(a => {
-      const href = a.getAttribute('href');
-      const isBottom = a.closest('.bottom-nav');
-      if (isBottom) {
-        const navType = a.dataset.nav;
+      const navType = a.dataset.nav;
+      if (navType) {
         let active = false;
         if (navType === 'home') active = path === '/';
         else if (navType === 'history') active = path === '/history';
@@ -242,8 +240,6 @@ const App = {
         else if (navType === 'series') active = typeFilter === 'series';
         else if (navType === 'movie') active = typeFilter === 'movie';
         a.classList.toggle('active', active);
-      } else {
-        a.classList.toggle('active', href === path || (href !== '/' && path.startsWith(href)));
       }
     });
   },
@@ -507,7 +503,7 @@ const App = {
     this.currentGenre = params.get('genre') || '';
     this.currentType = params.get('type') || '';
     this.currentStatus = params.get('status') || '';
-    this.currentSort = params.get('sort') || 'updated_at.desc';
+    this.currentSort = params.get('sort') || 'rating.desc';
     const search = params.get('search') || '';
 
     const [genres, result] = await Promise.all([
@@ -525,7 +521,7 @@ const App = {
     this.browseLoading = false;
     this.browseDone = false;
 
-    const activeFilterCount = [this.currentType, this.currentGenre, this.currentStatus, this.currentSort !== 'updated_at.desc' ? this.currentSort : ''].filter(Boolean).length;
+    const activeFilterCount = [this.currentType, this.currentGenre, this.currentStatus, this.currentSort !== 'rating.desc' ? this.currentSort : ''].filter(Boolean).length;
 
     const titleText = search ? `Search: "${search}"` : 'Browse Anime';
 
@@ -575,8 +571,8 @@ const App = {
           <div class="filter-group">
             <label>Sort</label>
             ${this.customSelectHTML('filter-sort', [
+              { value: 'rating.desc', label: 'Trending' },
               { value: 'updated_at.desc', label: 'Latest' },
-              { value: 'rating.desc', label: 'Highest Rated' },
               { value: 'title.asc', label: 'Title A-Z' },
               { value: 'release_year.desc', label: 'Newest' },
             ], this.currentSort)}

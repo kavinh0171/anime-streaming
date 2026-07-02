@@ -51,19 +51,19 @@
     </button>
   </div>
   <nav class="drawer-nav">
-    <a href="/" onclick="event.preventDefault();event.stopPropagation();App.navigate('/')">
+    <a href="/" data-nav="home" onclick="event.preventDefault();event.stopPropagation();App.navigate('/')">
       <svg class="icon" aria-hidden="true"><use href="#icon-tv"/></svg> Home
     </a>
-    <a href="/browse" onclick="event.preventDefault();event.stopPropagation();App.navigate('/browse')">
+    <a href="/browse" data-nav="browse" onclick="event.preventDefault();event.stopPropagation();App.navigate('/browse')">
       <svg class="icon" aria-hidden="true"><use href="#icon-film"/></svg> Browse
     </a>
-    <a href="/browse?type=series" onclick="event.preventDefault();event.stopPropagation();App.navigate('/browse?type=series')">
+    <a href="/browse?type=series" data-nav="series" onclick="event.preventDefault();event.stopPropagation();App.navigate('/browse?type=series')">
       <svg class="icon" aria-hidden="true"><use href="#icon-tv"/></svg> Series
     </a>
-    <a href="/browse?type=movie" onclick="event.preventDefault();event.stopPropagation();App.navigate('/browse?type=movie')">
+    <a href="/browse?type=movie" data-nav="movie" onclick="event.preventDefault();event.stopPropagation();App.navigate('/browse?type=movie')">
       <svg class="icon" aria-hidden="true"><use href="#icon-film"/></svg> Movies
     </a>
-    <a href="/history" onclick="event.preventDefault();event.stopPropagation();App.navigate('/history')">
+    <a href="/history" data-nav="history" onclick="event.preventDefault();event.stopPropagation();App.navigate('/history')">
       <svg class="icon" aria-hidden="true"><use href="#icon-history"/></svg> History
     </a>
   </nav>
@@ -73,10 +73,10 @@
   <div class="container">
     <a href="/" class="logo" onclick="event.preventDefault();App.navigate('/')">Anime<span>Stream</span></a>
     <nav class="nav">
-      <a href="/" class="active" onclick="event.preventDefault();App.navigate('/')">Home</a>
-      <a href="/browse" onclick="event.preventDefault();App.navigate('/browse')">Browse</a>
-      <a href="/browse?type=series" onclick="event.preventDefault();App.navigate('/browse?type=series')">Series</a>
-      <a href="/browse?type=movie" onclick="event.preventDefault();App.navigate('/browse?type=movie')">Movies</a>
+      <a href="/" data-nav="home" onclick="event.preventDefault();App.navigate('/')">Home</a>
+      <a href="/browse" data-nav="browse" onclick="event.preventDefault();App.navigate('/browse')">Browse</a>
+      <a href="/browse?type=series" data-nav="series" onclick="event.preventDefault();App.navigate('/browse?type=series')">Series</a>
+      <a href="/browse?type=movie" data-nav="movie" onclick="event.preventDefault();App.navigate('/browse?type=movie')">Movies</a>
     </nav>
     <div class="header-right">
       <div class="search-bar collapsed" id="search-bar">
