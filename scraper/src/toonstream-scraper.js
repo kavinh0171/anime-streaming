@@ -83,10 +83,10 @@ async function extractFromFetch(slug) {
       || $('iframe[src*="toonstream"]').first().attr('src');
     if (!embedSrc) return null;
     const $$ = cheerio.load(await fetchText(embedSrc));
-    const hashUrl = $$('.Video iframe[src*="as-cdn"], iframe[src*="as-cdn"]').first().attr('src');
-    if (!hashUrl) return null;
-    const hash = hashUrl.split('/').pop();
-    return { embedSrc, hash };
+    const playerUrl = $$('.Video iframe[src*="as-cdn"], iframe[src*="as-cdn"]').first().attr('src');
+    if (!playerUrl) return null;
+    const hash = playerUrl.split('/').pop();
+    return { embedSrc, hash, playerUrl };
   } catch { return null; }
 }
 
@@ -102,13 +102,13 @@ async function extractFromBrowser(slug, context) {
     if (!embedSrc) return null;
     await page.goto(embedSrc, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => page.waitForTimeout(2000));
     await page.waitForTimeout(800);
-    const hashUrl = await page.evaluate(() => {
+    const playerUrl = await page.evaluate(() => {
       const f = document.querySelector('iframe[src*="as-cdn"], .Video iframe');
       return f ? f.getAttribute('src') : null;
     }).catch(() => null);
-    if (!hashUrl) return null;
-    const hash = hashUrl.split('/').pop();
-    return { embedSrc, hash };
+    if (!playerUrl) return null;
+    const hash = playerUrl.split('/').pop();
+    return { embedSrc, hash, playerUrl };
   } finally { await page.close().catch(() => {}); }
 }
 
@@ -119,10 +119,9 @@ async function extractVideoSources(slug, context) {
     logger.warn(`  No source for ${slug}`);
     return null;
   }
-  const { embedSrc, hash } = result;
-  const cdnUrl = `https://as-cdn21.top/player/index.php?data=${hash}`;
+  const { embedSrc, hash, playerUrl } = result;
   const treembedUrl = embedSrc + '&vhash=' + hash;
-  return { sources: [{ source_url: cdnUrl, source_type: 'embed', quality: 'HD', language: 'sub' }], treembedUrl };
+  return { sources: [{ source_url: playerUrl, source_type: 'embed', quality: 'HD', language: 'sub' }], treembedUrl };
 }
 
 // --- Fetch anime detail via fetch, browser fallback ---
