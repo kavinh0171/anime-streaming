@@ -51,7 +51,13 @@ async function findExistingAnime(title) {
 }
 
 async function newPage(browser) {
-  const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
+  const ctx = await browser.newContext({
+    viewport: { width: 1920, height: 1080 },
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+  });
+  await ctx.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+  });
   return ctx.newPage();
 }
 
@@ -60,25 +66,33 @@ async function fetchSeriesList(pageNum = 1, browser) {
   logger.info(`ToonStream: Fetching series page ${pageNum}`);
   const page = await newPage(browser);
   try {
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => page.waitForTimeout(3000));
-    await page.waitForTimeout(2000);
-    const items = await page.$$eval('li.series', (lis) => lis.map(li => ({
-      title: li.querySelector('.entry-title')?.textContent?.trim() || '',
-      rating: parseFloat(li.querySelector('.vote')?.textContent?.replace(/[^0-9.]/g, '') || '0'),
-      image: li.querySelector('img')?.getAttribute('src') || '',
-      slug: li.querySelector('.lnk-blk')?.getAttribute('href')?.split('/').filter(Boolean).pop() || '',
-      postId: li.id?.replace('post-', '') || '',
-    })));
-    logger.info(`ToonStream: Page ${pageNum} — found ${items.length} items`);
-    for (const item of items) {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => page.waitForTimeout(3000));
+    await page.waitForSelector('li.series, article.post, .series', { timeout: 15000 }).catch(() => {});
+    await page.waitForTimeout(1000);
+    const items = await page.$$eval('li.series, article.post, .series', (els) => els.map(el => ({
+      title: el.querySelector('.entry-title')?.textContent?.trim() || '',
+      rating: parseFloat(el.querySelector('.vote')?.textContent?.replace(/[^0-9.]/g, '') || '0'),
+      image: el.querySelector('img')?.getAttribute('src') || '',
+      slug: (el.querySelector('.lnk-blk')?.getAttribute('href') || el.querySelector('a[href*="/series/"]')?.getAttribute('href') || '').split('/').filter(Boolean).pop() || '',
+      postId: el.id?.replace('post-', '') || '',
+    }))).catch(() => []);
+    // Deduplicate by slug
+    const seen = new Set();
+    const unique = items.filter(i => { if (!i.slug || seen.has(i.slug)) return false; seen.add(i.slug); return true; });
+    logger.info(`ToonStream: Page ${pageNum} — found ${unique.length} unique items (${items.length} raw)`);
+    for (const item of unique) {
       logger.info(`  - ${item.title} (rating: ${item.rating}) [${item.slug}]`);
     }
-    const totalPages = await page.$$eval('.page-link', els => {
-      const nums = els.map(e => parseInt(e.textContent)).filter(n => !isNaN(n));
+    const totalPages = await page.evaluate(() => {
+      const links = document.querySelectorAll('.page-link, .pagination a, .page-numbers, a.page-link');
+      const nums = Array.from(links).map(e => parseInt(e.textContent)).filter(n => !isNaN(n));
       return nums.length > 0 ? Math.max(...nums) : 1;
     }).catch(() => 1);
     logger.info(`ToonStream: Page ${pageNum}/${totalPages}`);
-    return { items, totalPages };
+    return { items: unique, totalPages };
+  } catch (err) {
+    logger.error(`ToonStream: fetchSeriesList page ${pageNum} error: ${err.message}`);
+    return { items: [], totalPages: 1 };
   } finally {
     await page.close();
   }
@@ -88,73 +102,82 @@ async function extractVideoSources(episodeSlug, browser) {
   const url = `${BASE}/episode/${episodeSlug}/`;
   logger.info(`ToonStream: Extracting video sources from ${episodeSlug}`);
   const sources = [];
+  let treembedUrl = null;
 
-  const page1 = await newPage(browser);
+  const page = await newPage(browser);
   try {
-    await page1.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
-    await page1.waitForTimeout(2000);
-    const embedSrc = await page1.$eval('iframe', el => el.getAttribute('src')).catch(() => null);
+    // Step 1: Get treembed URL from episode page
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
+    await page.waitForTimeout(2000);
+
+    const embedSrc = await page.evaluate(() => {
+      const iframe = document.querySelector('#aa-options iframe[src], .video-player iframe[src], .aa-tb.hdd.on iframe[src], iframe:not([src=""])');
+      return iframe ? iframe.getAttribute('src') : null;
+    }).catch(() => null);
+
     if (!embedSrc) {
       logger.warn(`ToonStream: No iframe found on episode page ${episodeSlug}`);
-      return [];
+      return { sources: [], treembedUrl: null };
     }
-    logger.info(`ToonStream: Embed iframe: ${embedSrc}`);
+    logger.info(`ToonStream: Treembed URL: ${embedSrc}`);
+    treembedUrl = embedSrc;
 
-    // Try to extract direct video stream from within the embed
-    const ctx2 = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
-    const page2 = await ctx2.newPage();
-    const streamUrls = [];
-    page2.on('response', async (response) => {
-      const u = response.url();
-      const headers = response.headers();
-      const contentType = headers['content-type'] || '';
-      
-      const isVideo = u.includes('.m3u8') || u.includes('.mp4') || u.includes('.mkv') || u.includes('.webm') ||
-                      contentType.includes('application/vnd.apple.mpegurl') ||
-                      contentType.includes('application/x-mpegURL') ||
-                      contentType.includes('video/');
-                      
-      if (isVideo && !u.startsWith('blob:')) {
-        if (!u.includes('google-analytics') && !u.includes('analytics') && !u.includes('doubleclick')) {
-          if (!streamUrls.includes(u)) {
-            streamUrls.push(u);
-            logger.info(`ToonStream:   Captured stream: ${u} (Type: ${contentType})`);
-          }
-        }
-      }
-    });
-    
-    await page2.goto(embedSrc, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
-    await page2.waitForTimeout(8000);
-    
-    if (streamUrls.length === 0) {
-      const html = await page2.content();
-      const matches = html.match(/https?:[^"' \t\r\n]+\.(?:m3u8|mp4|mkv|webm)[^"' \t\r\n]*/gi) || [];
-      for (const m of matches) {
-        if (!streamUrls.includes(m)) streamUrls.push(m);
-      }
+    // Step 2: Navigate to treembed page to extract video hash from its iframe
+    await page.goto(embedSrc, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
+    await page.waitForTimeout(2000);
+
+    const videoHashUrl = await page.evaluate(() => {
+      const iframe = document.querySelector('.Video iframe, iframe[src*="as-cdn"]');
+      return iframe ? iframe.getAttribute('src') : null;
+    }).catch(() => null);
+
+    if (!videoHashUrl) {
+      logger.warn(`ToonStream: No video iframe in treembed page for ${episodeSlug}`);
+      return { sources: [], treembedUrl };
     }
-    await ctx2.close();
-    
-    // Add captured direct stream URLs to sources
-    for (const m of streamUrls) {
-      const isM3U8 = m.includes('.m3u8') || m.includes('mpegurl');
+
+    const videoHash = videoHashUrl.split('/').pop();
+    logger.info(`ToonStream: Video hash: ${videoHash}`);
+
+    // Append video hash to treembed URL for instant future refresh (no navigation needed)
+    treembedUrl = embedSrc + '&vhash=' + videoHash;
+
+    // Step 3: Call do=getVideo API directly (instant, no JWPlayer wait)
+    const apiUrl = `https://as-cdn21.top/player/index.php?data=${videoHash}&do=getVideo`;
+    const apiResponse = await page.request.fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Referer': videoHashUrl, 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    const apiText = await apiResponse.text();
+    let hlsUrl = null;
+
+    try {
+      const apiJson = JSON.parse(apiText);
+      hlsUrl = apiJson.videoSource || apiJson.securedLink || null;
+    } catch (e) {
+      logger.warn(`ToonStream: Failed to parse API response for ${episodeSlug}: ${apiText.substring(0, 100)}`);
+    }
+
+    if (hlsUrl) {
       sources.push({
-        source_url: m,
-        source_type: isM3U8 ? 'hls' : 'mp4',
+        source_url: hlsUrl,
+        source_type: 'hls',
         quality: 'HD',
         language: 'sub',
-        order: sources.length
+        order: 0
       });
+      logger.info(`ToonStream:   HLS: ${hlsUrl.substring(0, 120)}`);
+    } else {
+      logger.warn(`ToonStream: No HLS URL in API response for ${episodeSlug}`);
     }
   } catch (err) {
     logger.warn(`ToonStream: Failed to extract video for ${episodeSlug}: ${err.message}`);
   } finally {
-    await page1.close();
+    await page.close();
   }
 
-  logger.info(`ToonStream: Got ${sources.length} direct source(s) for ${episodeSlug}`);
-  return sources;
+  logger.info(`ToonStream: Got ${sources.length} HLS source(s) for ${episodeSlug}`);
+  return { sources, treembedUrl };
 }
 
 async function fetchAnimeDetail(slug, browser) {
@@ -177,11 +200,14 @@ async function fetchAnimeDetail(slug, browser) {
       const parts = numText.split(/[xX]/);
       const sNum = parseInt(parts[0]) || 1;
       const eNum = parseInt(parts[1]) || 0;
-      const epLink = li.querySelector('.lnk-blk')?.getAttribute('href') || '';
+      const epLink = li.querySelector('.lnk-blk')?.getAttribute('href') ||
+                     li.querySelector('a[href*="/episode/"]')?.getAttribute('href') ||
+                     li.querySelector('a')?.getAttribute('href') || '';
+      const epTitle = li.querySelector('.entry-title')?.textContent?.trim() || '';
       return {
         season: sNum,
         number: eNum,
-        title: li.querySelector('.entry-title')?.textContent?.trim() || `Episode ${eNum}`,
+        title: epTitle || `Episode ${eNum}`,
         thumbnail: li.querySelector('img')?.getAttribute('src') || '',
         slug: epLink.split('/').filter(Boolean).pop() || '',
       };
@@ -237,25 +263,37 @@ async function fetchAnimeDetail(slug, browser) {
 }
 
 async function addVideoSourcesForEpisodes(episodeRecords, browser) {
-  const batch = episodeRecords.filter(e => e.slug).slice(0, 5);
+  const batch = episodeRecords.filter(e => e.slug);
   if (batch.length === 0) return;
   // Remove old sources so player picks the fresh ones
   const ids = batch.map(e => e.id);
   try { await supabaseClient.from('video_sources').delete().in('episode_id', ids); } catch (e) {}
-  const results = await Promise.allSettled(batch.map(e => extractVideoSources(e.slug, browser)));
-  for (let i = 0; i < results.length; i++) {
-    const r = results[i];
-    if (r.status === 'fulfilled' && r.value.length > 0) {
-      for (const source of r.value) {
-        try {
-          await supabaseClient.from('video_sources').insert({
-            episode_id: batch[i].id,
-            source_url: source.source_url,
-            source_type: source.source_type,
-            quality: 'HD',
-            language: 'sub',
-          });
-        } catch {}
+  // Process in batches of 3 to avoid overwhelming the browser
+  for (let start = 0; start < batch.length; start += 3) {
+    const subBatch = batch.slice(start, start + 3);
+    const results = await Promise.allSettled(subBatch.map(e => extractVideoSources(e.slug, browser)));
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
+      if (r.status === 'fulfilled') {
+        const { sources, treembedUrl } = r.value;
+        // Store the treembed URL on the episode for future refresh capability
+        if (treembedUrl) {
+          try {
+            await supabaseClient.from('episodes').update({ source_url: treembedUrl }).eq('id', subBatch[i].id);
+          } catch (e) {}
+        }
+        // Insert HLS video sources
+        for (const source of sources) {
+          try {
+            await supabaseClient.from('video_sources').insert({
+              episode_id: subBatch[i].id,
+              source_url: source.source_url,
+              source_type: source.source_type,
+              quality: 'HD',
+              language: 'sub',
+            });
+          } catch {}
+        }
       }
     }
   }
@@ -326,7 +364,7 @@ async function processAnimeItem(item, browser) {
       for (const ep of season.episodes) {
         const { data: existingEp } = await supabaseClient.from('episodes').select('id').eq('anime_id', existing.id).eq('season_id', seasonRecord.id).eq('episode_number', ep.number).maybeSingle();
         if (existingEp) continue;
-        const epRecord = await db.upsertEpisode({ anime_id: existing.id, season_id: seasonRecord.id, episode_number: ep.number, title: ep.title, thumbnail: ep.thumbnail });
+        const epRecord = await db.upsertEpisode({ anime_id: existing.id, season_id: seasonRecord.id, episode_number: ep.number, title: ep.title, thumbnail: ep.thumbnail, source_url: `${BASE}/episode/${ep.slug}/` });
         if (epRecord) {
           logger.info(`ToonStream:  + Added episode S${ep.season}E${ep.number}: ${ep.title}`);
           newEpisodeRecords.push({ ...epRecord, slug: ep.slug });
@@ -377,7 +415,7 @@ async function processAnimeItem(item, browser) {
     logger.info(`ToonStream:  Season ${season.season_number} (ID: ${seasonRecord.id})`);
     const episodeRecords = [];
     for (const ep of season.episodes) {
-      const epRecord = await db.upsertEpisode({ anime_id: anime.id, season_id: seasonRecord.id, episode_number: ep.number, title: ep.title, thumbnail: ep.thumbnail });
+      const epRecord = await db.upsertEpisode({ anime_id: anime.id, season_id: seasonRecord.id, episode_number: ep.number, title: ep.title, thumbnail: ep.thumbnail, source_url: `${BASE}/episode/${ep.slug}/` });
       if (epRecord) {
         logger.info(`ToonStream:    E${ep.number}: ${ep.title}`);
         episodeRecords.push({ ...epRecord, slug: ep.slug });

@@ -912,10 +912,26 @@ const App = {
     const prevEp = currentIdx > 0 ? seasonEps[currentIdx - 1] : null;
     const nextEp = currentIdx < seasonEps.length - 1 ? seasonEps[currentIdx + 1] : null;
 
-    let videoUrl = episode.video_sources?.[0]?.source_url || episode.source_url || '';
-    let sourceType = episode.video_sources?.[0]?.source_type || 'embed';
+    // Sort stored video sources (fallback if refresh fails)
+    const allSources = (episode.video_sources || []).sort((a, b) => {
+      const order = { hls: 0, mp4: 1 };
+      return (order[a.source_type] || 99) - (order[b.source_type] || 99);
+    });
+    let fallbackUrl = allSources[0]?.source_url || '';
+    let videoUrl = '';
+    let sourceType = 'hls';
     let videoId = 'hls-video-' + epId.replace(/[^a-zA-Z0-9]/g, '');
-    let isDirectVideo = sourceType === 'hls' || sourceType === 'mp4' || videoUrl.includes('.mp4') || videoUrl.includes('.m3u8') || videoUrl.includes('.mkv') || videoUrl.includes('.webm');
+
+    // Try to get a fresh HLS URL from the server API (always returns non-expired URL)
+    try {
+      const resp = await fetch('/api/video-source/' + epId);
+      if (resp.ok) {
+        const data = await resp.json();
+        videoUrl = data.source_url;
+        sourceType = data.source_type || 'hls';
+      }
+    } catch (e) {}
+    if (!videoUrl) videoUrl = fallbackUrl;
 
     WatchHistory.add({
       slug, animeTitle: anime.title, episodeId: epId,
@@ -928,15 +944,13 @@ const App = {
     main.innerHTML = `
       <div class="player-page container">
         <div class="player-wrapper">
-          ${videoUrl ? (isDirectVideo ? `
-            <video id="${videoId}" class="hls-player" controls autoplay playsinline></video>
+          ${videoUrl ? `
+            <video id="${videoId}" class="hls-player" controls playsinline></video>
           ` : `
-            <iframe src="${videoUrl}" allowfullscreen allow="autoplay; fullscreen" loading="lazy"></iframe>
-          `) : `
             <div class="placeholder">
               ${I('icon-film')}
               <h3>No video source available</h3>
-              <p>The video for this episode has not been loaded yet</p>
+              <p>This episode has no video source yet. Run the scraper to populate it.</p>
             </div>
           `}
         </div>
@@ -992,21 +1006,22 @@ const App = {
       </div>
     `;
 
-    // Initialize HLS/MP4 player for direct video sources
-    if (isDirectVideo && videoUrl) {
+    // Initialize HLS player
+    if (videoUrl) {
       const videoEl = document.getElementById(videoId);
       if (videoEl) {
-        const isMp4 = sourceType === 'mp4' || videoUrl.includes('.mp4') || videoUrl.includes('.mkv') || videoUrl.includes('.webm');
-        if (isMp4) {
+        if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
           videoEl.src = videoUrl;
-        } else {
-          if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-            videoEl.src = videoUrl;
-          } else if (typeof Hls !== 'undefined') {
-            const hls = new Hls();
-            hls.loadSource(videoUrl);
-            hls.attachMedia(videoEl);
-          }
+        } else if (typeof Hls !== 'undefined') {
+          const hls = new Hls();
+          hls.loadSource(videoUrl);
+          hls.attachMedia(videoEl);
+          hls.on(Hls.Events.ERROR, (event, data) => {
+            if (data.fatal) {
+              const wrapper = videoEl.parentElement;
+              wrapper.innerHTML = '<div class="placeholder"><h3>Playback error</h3><p>Could not load the video. Refresh the page to try again.</p></div>';
+            }
+          });
         }
       }
     }

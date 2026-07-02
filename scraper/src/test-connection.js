@@ -12,10 +12,12 @@ async function testConnection() {
     console.log('✓ Supabase connection successful');
     console.log('✓ Database is accessible');
 
-    const { data: tables, error: tableError } = await supabase
-      .rpc('get_schema_tables')
-      .catch(() => ({ data: null, error: null }));
-
+    let tableError = null;
+    try {
+      const result = await supabase.rpc('get_schema_tables');
+    } catch (e) {
+      tableError = e;
+    }
     if (!tableError) {
       console.log('✓ Schema tables:');
     }

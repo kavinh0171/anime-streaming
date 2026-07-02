@@ -10,6 +10,7 @@ const supabase = require('../../database/config');
     console.log(`  ${item.slug} — ${item.title}`);
   }
   for (const item of items) {
+    await supabase.from('featured_anime').delete().eq('anime_id', item.id);
     const { data: eps } = await supabase.from('episodes').select('id').eq('anime_id', item.id);
     if (eps && eps.length > 0) {
       const epIds = eps.map(e => e.id);
