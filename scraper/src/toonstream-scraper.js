@@ -23,6 +23,11 @@ function fuzzyMatch(a, b) {
   return false;
 }
 
+function hqImage(url) {
+  if (!url) return '';
+  return url.replace(/-\d+x\d+(?=\.[a-z]{3,4}$)/i, '').replace(/-scaled(?=\.[a-z]{3,4}$)/i, '');
+}
+
 const htmlCache = new Map();
 async function fetchText(url) {
   if (htmlCache.has(url)) return htmlCache.get(url);
@@ -46,7 +51,7 @@ async function fetchSeriesList(pageNum = 1) {
     $('li.series, article.post, .series').each((i, el) => {
       const title = $(el).find('.entry-title').text().trim();
       const rating = parseFloat($(el).find('.vote').text().replace(/[^0-9.]/g, '') || '0');
-      const image = $(el).find('img').attr('src') || '';
+      const image = hqImage($(el).find('img').attr('src') || '');
       const href = $(el).find('.lnk-blk').attr('href') || $(el).find('a[href*="/series/"]').attr('href') || '';
       const slug = href.split('/').filter(Boolean).pop() || '';
       if (slug) items.push({ title, rating, image, slug, postId: $(el).attr('id')?.replace('post-', '') || '' });
@@ -127,7 +132,9 @@ async function fetchAnimeDetail(slug, context) {
     const html = await fetchText(`${BASE}/series/${slug}/`);
     const $ = cheerio.load(html);
     const title = $('.entry-title').first().text().trim() || slug;
-    const image = $('.post-thumbnail img').first().attr('src') || '';
+    let image = $('.post-thumbnail img').first().attr('src') || '';
+    if (image) image = hqImage(image);
+    if (!image) image = hqImage($('.entry-content img').first().attr('src') || '');
     const description = $('.description p').first().text().trim() || '';
     const yearText = $('.year').first().text().trim() || '';
     const year = parseInt(yearText.replace(/[^0-9]/g, '')) || null;
@@ -153,7 +160,7 @@ async function fetchAnimeDetail(slug, context) {
           const slug = href.split('/').filter(Boolean).pop() || '';
           if (!slug) return;
           const eNum = parseInt(parts[1]) || 0;
-          episodes.push({ season: parseInt(parts[0]) || snum, number: eNum, title: $(li).find('.entry-title').text().trim() || `Episode ${eNum}`, thumbnail: $(li).find('img').attr('src') || '', slug });
+          episodes.push({ season: parseInt(parts[0]) || snum, number: eNum, title: $(li).find('.entry-title').text().trim() || `Episode ${eNum}`, thumbnail: hqImage($(li).find('img').attr('src') || ''), slug });
         });
         if (episodes.length > 0) { logger.info(`  S${snum}: ${episodes.length} eps`); seasons.push({ season_number: snum, postId, episodes }); }
       });
@@ -166,7 +173,7 @@ async function fetchAnimeDetail(slug, context) {
         const slug = href.split('/').filter(Boolean).pop() || '';
         if (!slug) return;
         const eNum = parseInt(parts[1]) || 0;
-        episodes.push({ season: parseInt(parts[0]) || 1, number: eNum, title: $(li).find('.entry-title').text().trim() || `Episode ${eNum}`, thumbnail: $(li).find('img').attr('src') || '', slug });
+        episodes.push({ season: parseInt(parts[0]) || 1, number: eNum, title: $(li).find('.entry-title').text().trim() || `Episode ${eNum}`, thumbnail: hqImage($(li).find('img').attr('src') || ''), slug });
       });
       if (episodes.length > 0) { logger.info(`  ${episodes.length} eps`); seasons.push({ season_number: 1, postId: '', episodes }); }
     }
@@ -184,7 +191,10 @@ async function fetchAnimeDetailBrowser(slug, context) {
     await page.goto(`${BASE}/series/${slug}/`, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => page.waitForTimeout(2000));
     await page.waitForTimeout(1000);
     const title = await page.$eval('.entry-title', el => el.textContent?.trim() || slug).catch(() => slug);
-    const image = await page.$eval('.post-thumbnail img', el => el.getAttribute('src') || '').catch(() => '');
+    let image = await page.$eval('.post-thumbnail img', el => el.getAttribute('src') || '').catch(() => '');
+    if (image) image = hqImage(image);
+    if (!image) image = await page.$eval('.entry-content img', el => el.getAttribute('src') || '').catch(() => '');
+    if (image) image = hqImage(image);
     const description = await page.$eval('.description p', el => el.textContent?.trim() || '').catch(() => '');
     const yearText = await page.$eval('.year', el => el.textContent?.trim() || '').catch(() => '');
     const year = parseInt(yearText.replace(/[^0-9]/g, '')) || null;
@@ -194,7 +204,8 @@ async function fetchAnimeDetailBrowser(slug, context) {
       const n = li.querySelector('.num-epi')?.textContent?.trim() || '';
       const p = n.split(/[xX]/);
       const link = (li.querySelector('.lnk-blk')?.getAttribute('href') || li.querySelector('a[href*="/episode/"]')?.getAttribute('href') || '').split('/').filter(Boolean).pop() || '';
-      return { season: parseInt(p[0]) || 1, number: parseInt(p[1]) || 0, title: li.querySelector('.entry-title')?.textContent?.trim() || `Episode ${p[1]}`, thumbnail: li.querySelector('img')?.getAttribute('src') || '', slug: link };
+      const thumb = li.querySelector('img')?.getAttribute('src') || '';
+      return { season: parseInt(p[0]) || 1, number: parseInt(p[1]) || 0, title: li.querySelector('.entry-title')?.textContent?.trim() || `Episode ${p[1]}`, thumbnail: hqImage(thumb), slug: link };
     })).catch(() => []);
 
     const seasonBtns = await page.$$('.choose-season .aa-cnt li a');
