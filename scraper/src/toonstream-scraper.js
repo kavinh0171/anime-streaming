@@ -295,11 +295,11 @@ async function findExistingAnime(title) {
   return (all || []).find(a => fuzzyMatch(a.title, title)) || null;
 }
 
-async function processAnimeItem(item, context) {
+async function processAnimeItem(item, context, force) {
   const existing = await findExistingAnime(item.title);
   if (existing) {
     if (!existing.slug?.startsWith('ts-')) { logger.info(`Skipping ${item.title} (toonplay)`); return null; }
-    if (await checkExistingComplete(existing.id)) { return null; }
+    if (!force && await checkExistingComplete(existing.id)) { return null; }
     logger.info(`Incomplete: ${item.title}`);
     const detail = await fetchAnimeDetail(item.slug, context);
     if (!detail?.title) return null;
@@ -407,7 +407,7 @@ async function fetchAllPages(maxPages) {
   return { items: allItems, totalPages };
 }
 
-async function processPool(items, processor, poolSize) {
+async function processPool(items, processor, poolSize, force) {
   let idx = 0;
   const results = [];
   const state = _progressState;
@@ -422,7 +422,7 @@ async function processPool(items, processor, poolSize) {
       const i = idx++;
       const item = items[i];
       try {
-        const r = await processor(item);
+        const r = await processor(item, force);
         if (r) { results.push(r); state.addedCount++; }
         else state.skipped++;
       } catch (err) { /* error logged by processor */ }
@@ -435,10 +435,10 @@ async function processPool(items, processor, poolSize) {
   return results;
 }
 
-async function scrapeIncremental(context, maxPages) {
-  logger.info(`=== Incremental${maxPages ? ` (${maxPages} page${maxPages > 1 ? 's' : ''})` : ' (all pages)'} ===`);
+async function scrapeIncremental(context, maxPages, force) {
+  logger.info(`=== Incremental${maxPages ? ` (${maxPages} page${maxPages > 1 ? 's' : ''})` : ' (all pages)'}${force ? ' (forced)' : ''} ===`);
   const { items } = await fetchAllPages(maxPages);
-  const added = await processPool(items, item => processAnimeItem(item, context), PARALLEL_ITEMS);
+  const added = await processPool(items, (item, f) => processAnimeItem(item, context, f), PARALLEL_ITEMS, force);
   clearLine();
   const elapsed = Math.floor((Date.now() - _progressState.startTime) / 1000);
   const m = Math.floor(elapsed / 60), sec = elapsed % 60;
@@ -446,10 +446,10 @@ async function scrapeIncremental(context, maxPages) {
   return added.length;
 }
 
-async function scrapeFull(context, maxPages) {
-  logger.info(`=== Full scan${maxPages ? ` (${maxPages} page${maxPages > 1 ? 's' : ''})` : ' (all pages)'} ===`);
+async function scrapeFull(context, maxPages, force) {
+  logger.info(`=== Full scan${maxPages ? ` (${maxPages} page${maxPages > 1 ? 's' : ''})` : ' (all pages)'}${force ? ' (forced)' : ''} ===`);
   const { items } = await fetchAllPages(maxPages);
-  const added = await processPool(items, item => processAnimeItem(item, context), PARALLEL_ITEMS);
+  const added = await processPool(items, (item, f) => processAnimeItem(item, context, f), PARALLEL_ITEMS, force);
   clearLine();
   const elapsed = Math.floor((Date.now() - _progressState.startTime) / 1000);
   const m = Math.floor(elapsed / 60), sec = elapsed % 60;

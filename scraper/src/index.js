@@ -13,6 +13,9 @@ logger.info = (msg) => { clearLine(); _logInfo(msg); };
 logger.warn = (msg) => { clearLine(); _logWarn(msg); };
 logger.error = (msg, ...args) => { clearLine(); _logError(msg, ...args); };
 
+let forceMode = false;
+let maxPages = 0;
+
 async function withBrowser(fn) {
   const { chromium } = require('playwright');
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
@@ -28,7 +31,7 @@ async function scrapeFull() {
   const log = await db.logScrapingStart('full');
   logger.info('=== Starting FULL scrape ===');
   try {
-    const totalResults = await withBrowser(ctx => toonstream.scrapeFull(ctx, maxPages));
+    const totalResults = await withBrowser(ctx => toonstream.scrapeFull(ctx, maxPages, forceMode));
     await db.logScrapingComplete(log.id, totalResults, null);
     logger.info(`=== FULL scrape complete: ${totalResults} added/updated ===`);
   } catch (err) {
@@ -41,7 +44,7 @@ async function scrapeIncremental() {
   const log = await db.logScrapingStart('incremental');
   logger.info('=== Starting INCREMENTAL scrape ===');
   try {
-    const totalItems = await withBrowser(ctx => toonstream.scrapeIncremental(ctx, maxPages));
+    const totalItems = await withBrowser(ctx => toonstream.scrapeIncremental(ctx, maxPages, forceMode));
     await db.logScrapingComplete(log.id, totalItems, null);
     logger.info(`=== Incremental done: ${totalItems} added/updated ===`);
   } catch (err) {
@@ -50,14 +53,13 @@ async function scrapeIncremental() {
   }
 }
 
-let maxPages = 0;
-
 async function main() {
   const args = process.argv.slice(2);
   const typeFlag = args.find((a) => a.startsWith('--type='));
   const type = typeFlag ? typeFlag.split('=')[1] : 'incremental';
   const maxPagesFlag = args.find((a) => a.startsWith('--max-pages='));
   if (maxPagesFlag) maxPages = parseInt(maxPagesFlag.split('=')[1], 10) || 0;
+  forceMode = args.includes('--force');
 
   try {
     switch (type) {
