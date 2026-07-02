@@ -2,6 +2,7 @@ require('dotenv').config();
 const logger = require('./logger');
 const db = require('./supabase');
 const api = require('./api-scraper');
+const toonstream = require('./toonstream-scraper');
 
 const MAX_CONCURRENT = parseInt(process.env.MAX_CONCURRENT_PAGES || '3');
 
@@ -69,49 +70,28 @@ async function scrapeFull() {
   const { chromium } = require('playwright');
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
 
-  logger.info('=== Starting FULL scrape ===');
-  logger.info('Discovering total available content...\n');
-
-  const firstSeriesPage = await api.fetchSeriesList(1, browser);
-  const totalSeriesPages = firstSeriesPage.totalPages || 1;
-  const firstMoviesPage = await api.fetchMoviesList(1, browser);
-  const totalMoviePages = firstMoviesPage.totalPages || 1;
-
-  const skippedPages = startPage - 1;
-  totalItemsToScrape = ((totalSeriesPages - skippedPages) * 12) + (totalMoviePages * 12);
-  logger.info(`Found ${totalSeriesPages} series pages, ${totalMoviePages} movie pages, ~${totalItemsToScrape} items remaining\n`);
-
-  skippedCount = 0;
-  currentItemCount = (startPage > 1 ? skippedPages * 12 : 0);
-  let totalResults = 0;
-  let allErrors = [];
-
-  for (let page = startPage; page <= totalSeriesPages; page++) {
-    const result = page === 1 ? firstSeriesPage : await api.fetchSeriesList(page, browser);
-    const series = result.items;
-    if (!series || series.length === 0) break;
-
-    logger.info(`\nProcessing ${series.length} series from page ${page}/${totalSeriesPages}`);
-    const { results, errors } = await processBatch(series, browser);
-    totalResults += results.length;
-    allErrors = allErrors.concat(errors);
+  logger.info('=== Starting FULL scrape (ToonStream) ===');
+  try {
+    const totalResults = await toonstream.scrapeFull(browser);
+    await db.logScrapingComplete(log.id, totalResults, null);
+    logger.info(`=== FULL scrape complete: ${totalResults} added/updated ===`);
+  } catch (err) {
+    logger.error('Full scrape failed:', err);
+    await db.logScrapingComplete(log.id, 0, [err.message]);
+  } finally {
+    await browser.close();
   }
+}
 
-  for (let page = 1; page <= totalMoviePages; page++) {
-    const result = page === 1 ? firstMoviesPage : await api.fetchMoviesList(page, browser);
-    const movies = result.items;
-    if (!movies || movies.length === 0) break;
-
-    logger.info(`\nProcessing ${movies.length} movies from page ${page}/${totalMoviePages}`);
-    const { results, errors } = await processBatch(movies, browser);
-    totalResults += results.length;
-    allErrors = allErrors.concat(errors);
-  }
-
+async function scrapeToonstreamOnly() {
+  const log = await db.logScrapingStart('toonstream');
+  const { chromium } = require('playwright');
+  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
+  logger.info('=== Starting ToonStream full scan (all pages) ===');
+  const added = await toonstream.scrapeFull(browser);
   await browser.close();
-  console.log('\n');
-  await db.logScrapingComplete(log.id, totalResults, allErrors.length > 0 ? allErrors : null);
-  logger.info(`=== FULL scrape complete: ${totalResults} new, ${skippedCount} skipped, ${allErrors.length} errors ===`);
+  await db.logScrapingComplete(log.id, added, null);
+  logger.info(`=== ToonStream full scan complete: ${added} added/updated ===`);
 }
 
 async function scrapeIncremental() {
@@ -120,28 +100,19 @@ async function scrapeIncremental() {
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
 
   skippedCount = 0;
-  logger.info('=== Starting INCREMENTAL scrape ===');
+  logger.info('=== Starting INCREMENTAL scrape (ToonStream) ===');
 
   let totalItems = 0;
-  let allErrors = [];
-
-  const series = await api.fetchSeriesList(1, browser);
-  const seriesBatch = (series.items || []).slice(0, 12);
-  logger.info(`Processing ${seriesBatch.length} series from page 1`);
-  const sResult = await processBatch(seriesBatch, browser);
-  totalItems += sResult.results.length;
-  allErrors = allErrors.concat(sResult.errors);
-
-  const moviesPage = await api.fetchMoviesList(1, browser);
-  const moviesBatch = (moviesPage.items || []).slice(0, 2);
-  logger.info(`Processing ${moviesBatch.length} movies from page 1`);
-  const mResult = await processBatch(moviesBatch, browser);
-  totalItems += mResult.results.length;
-  allErrors = allErrors.concat(mResult.errors);
-
-  await browser.close();
-  await db.logScrapingComplete(log.id, totalItems, allErrors.length > 0 ? allErrors : null);
-  logger.info(`=== Incremental scrape complete: ${totalItems} new, ${skippedCount} skipped, ${allErrors.length} errors ===`);
+  try {
+    totalItems = await toonstream.scrapeIncremental(browser);
+    await db.logScrapingComplete(log.id, totalItems, null);
+    logger.info(`=== Incremental scrape complete: ${totalItems} added/updated ===`);
+  } catch (err) {
+    logger.error('Incremental scrape failed:', err);
+    await db.logScrapingComplete(log.id, 0, [err.message]);
+  } finally {
+    await browser.close();
+  }
 }
 
 async function main() {
@@ -154,10 +125,13 @@ async function main() {
 
   try {
     switch (type) {
-      case 'full': await scrapeFull(); break;
       case 'incremental': await scrapeIncremental(); break;
-      case 'series': await scrapeSeriesOnly(); break;
-      case 'movies': await scrapeMoviesOnly(); break;
+      case 'full': await scrapeFull(); break;
+      case 'toonstream': await scrapeToonstreamOnly(); break;
+      case 'series': await scrapeFull(); break;
+      case 'movies':
+        logger.warn('ToonStream does not have movies. Skipping movies scrape.');
+        break;
       default: await scrapeIncremental();
     }
   } catch (err) {
@@ -169,60 +143,21 @@ async function main() {
 }
 
 async function scrapeSeriesOnly() {
-  skippedCount = 0;
-  const log = await db.logScrapingStart('series');
-  const { chromium } = require('playwright');
-  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
-
-  const firstPage = await api.fetchSeriesList(1, browser);
-  const totalPages = firstPage.totalPages || 1;
-  const skippedPages = startPage - 1;
-  totalItemsToScrape = (totalPages - skippedPages) * 12;
-  currentItemCount = skippedPages * 12;
-  let totalResults = 0;
-  let allErrors = [];
-
-  for (let page = startPage; page <= totalPages; page++) {
-    const result = page === 1 ? firstPage : await api.fetchSeriesList(page, browser);
-    const series = result.items;
-    if (!series || series.length === 0) break;
-    const { results, errors } = await processBatch(series, browser);
-    totalResults += results.length;
-    allErrors = allErrors.concat(errors);
-  }
-
-  await browser.close();
-  console.log('\n');
-  await db.logScrapingComplete(log.id, totalResults, allErrors.length > 0 ? allErrors : null);
-  logger.info(`=== Series scrape complete: ${totalResults} new, ${skippedCount} skipped ===`);
+  await scrapeFull();
 }
 
 async function scrapeMoviesOnly() {
-  skippedCount = 0;
-  const log = await db.logScrapingStart('movies');
-  const { chromium } = require('playwright');
-  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
-
-  const firstPage = await api.fetchMoviesList(1, browser);
-  const totalPages = firstPage.totalPages || 1;
-  totalItemsToScrape = totalPages * 12;
-  currentItemCount = 0;
-  let totalResults = 0;
-  let allErrors = [];
-
-  for (let page = 1; page <= totalPages; page++) {
-    const result = page === 1 ? firstPage : await api.fetchMoviesList(page, browser);
-    const movies = result.items;
-    if (!movies || movies.length === 0) break;
-    const { results, errors } = await processBatch(movies, browser);
-    totalResults += results.length;
-    allErrors = allErrors.concat(errors);
-  }
-
-  await browser.close();
-  console.log('\n');
-  await db.logScrapingComplete(log.id, totalResults, allErrors.length > 0 ? allErrors : null);
-  logger.info(`=== Movies scrape complete: ${totalResults} new, ${skippedCount} skipped ===`);
+  logger.warn('ToonStream does not have movies. Skipping.');
 }
 
-main();
+module.exports = {
+  scrapeFull,
+  scrapeIncremental,
+  scrapeSeriesOnly,
+  scrapeMoviesOnly,
+  scrapeToonstreamOnly
+};
+
+if (require.main === module) {
+  main();
+}

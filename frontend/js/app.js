@@ -913,6 +913,9 @@ const App = {
     const nextEp = currentIdx < seasonEps.length - 1 ? seasonEps[currentIdx + 1] : null;
 
     let videoUrl = episode.video_sources?.[0]?.source_url || episode.source_url || '';
+    let sourceType = episode.video_sources?.[0]?.source_type || 'embed';
+    let videoId = 'hls-video-' + epId.replace(/[^a-zA-Z0-9]/g, '');
+    let isDirectVideo = sourceType === 'hls' || sourceType === 'mp4' || videoUrl.includes('.mp4') || videoUrl.includes('.m3u8') || videoUrl.includes('.mkv') || videoUrl.includes('.webm');
 
     WatchHistory.add({
       slug, animeTitle: anime.title, episodeId: epId,
@@ -925,9 +928,11 @@ const App = {
     main.innerHTML = `
       <div class="player-page container">
         <div class="player-wrapper">
-          ${videoUrl ? `
-            <iframe src="${videoUrl}" allowfullscreen allow="autoplay; fullscreen" loading="lazy"></iframe>
+          ${videoUrl ? (isDirectVideo ? `
+            <video id="${videoId}" class="hls-player" controls autoplay playsinline></video>
           ` : `
+            <iframe src="${videoUrl}" allowfullscreen allow="autoplay; fullscreen" loading="lazy"></iframe>
+          `) : `
             <div class="placeholder">
               ${I('icon-film')}
               <h3>No video source available</h3>
@@ -986,6 +991,25 @@ const App = {
         </section>
       </div>
     `;
+
+    // Initialize HLS/MP4 player for direct video sources
+    if (isDirectVideo && videoUrl) {
+      const videoEl = document.getElementById(videoId);
+      if (videoEl) {
+        const isMp4 = sourceType === 'mp4' || videoUrl.includes('.mp4') || videoUrl.includes('.mkv') || videoUrl.includes('.webm');
+        if (isMp4) {
+          videoEl.src = videoUrl;
+        } else {
+          if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+            videoEl.src = videoUrl;
+          } else if (typeof Hls !== 'undefined') {
+            const hls = new Hls();
+            hls.loadSource(videoUrl);
+            hls.attachMedia(videoEl);
+          }
+        }
+      }
+    }
 
     // Season tab switching
     this.initCustomSelects();

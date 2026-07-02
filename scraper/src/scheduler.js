@@ -2,14 +2,15 @@ require('dotenv').config();
 const cron = require('node-cron');
 const logger = require('./logger');
 const { cleanup } = require('./browser');
+const scraper = require('./index');
 
 async function runScraper(type) {
   logger.info(`[Scheduler] Starting ${type} scrape`);
   try {
     if (type === 'full') {
-      await require('./index').scrapeFull();
+      await scraper.scrapeFull();
     } else {
-      await require('./index').scrapeIncremental();
+      await scraper.scrapeIncremental();
     }
     logger.info(`[Scheduler] ${type} scrape completed successfully`);
   } catch (err) {
