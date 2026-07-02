@@ -1,6 +1,6 @@
 # AnimeStream - Anime Streaming Platform
 
-A complete anime streaming website with automated scraping from toonplay.in, Supabase backend, and a Crunchyroll-like UI.
+A complete anime streaming website with automated scraping from toonstream.vip, Supabase backend, and a Crunchyroll-like UI.
 
 ## Architecture
 

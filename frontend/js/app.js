@@ -947,7 +947,7 @@ const App = {
       <div class="player-page container">
         <div class="player-wrapper">
           ${videoUrl && sourceType === 'embed' ? `
-            <iframe src="${videoUrl}" allowfullscreen allow="autoplay;fullscreen" loading="lazy"></iframe>
+            <iframe src="${videoUrl}" sandbox="allow-scripts allow-same-origin" allowfullscreen allow="autoplay;fullscreen" loading="lazy"></iframe>
           ` : videoUrl && sourceType === 'hls' ? `
             <video id="${videoId}" class="hls-player" controls playsinline></video>
           ` : `

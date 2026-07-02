@@ -374,4 +374,21 @@ async function scrapeFull(context) {
   return added.length;
 }
 
-module.exports = { fetchSeriesList, fetchAnimeDetail, processAnimeItem, scrapeIncremental, scrapeFull };
+// Scan only the first N pages (for daily GitHub Actions runs)
+async function scrapeDaily(context, maxPages = 5) {
+  logger.info(`=== Daily scan (first ${maxPages} pages) ===`);
+  let allItems = [];
+  const first = await fetchSeriesList(1);
+  allItems = first.items;
+  const pagesToFetch = Math.min(maxPages - 1, (first.totalPages || 1) - 1);
+  if (pagesToFetch > 0) {
+    const pages = await Promise.all(Array.from({ length: pagesToFetch }, (_, i) => fetchSeriesList(i + 2)));
+    for (const p of pages) allItems = allItems.concat(p.items);
+  }
+  logger.info(`Total items: ${allItems.length} (from ${Math.min(maxPages, first.totalPages || 1)} pages)`);
+  const added = await processPool(allItems, item => processAnimeItem(item, context));
+  logger.info(`Daily scan done: ${added.length} added/updated`);
+  return added.length;
+}
+
+module.exports = { fetchSeriesList, fetchAnimeDetail, processAnimeItem, scrapeIncremental, scrapeFull, scrapeDaily };
