@@ -112,7 +112,6 @@ async function extractFromBrowser(slug, context) {
 }
 
 async function extractVideoSources(slug, context) {
-  logger.info(`  Extracting: ${slug}`);
   let result = await extractFromFetch(slug);
   if (!result && context) result = await extractFromBrowser(slug, context);
   if (!result) {
@@ -274,7 +273,7 @@ async function processAnimeItem(item, context) {
   const existing = await findExistingAnime(item.title);
   if (existing) {
     if (!existing.slug?.startsWith('ts-')) { logger.info(`Skipping ${item.title} (toonplay)`); return null; }
-    if (await checkExistingComplete(existing.id)) { logger.info(`Skipping ${item.title} (complete)`); return null; }
+    if (await checkExistingComplete(existing.id)) { return null; }
     logger.info(`Incomplete: ${item.title}`);
     const detail = await fetchAnimeDetail(item.slug, context);
     if (!detail?.title) return null;
@@ -343,16 +342,64 @@ async function processAnimeItem(item, context) {
   return { id: anime.id, title: detail.title, added: 'new' };
 }
 
-// --- Parallel item processing pool ---
-async function processPool(items, processor, poolSize = PARALLEL_ITEMS) {
+// --- Progress display ---
+let _progressState = { done: 0, total: 0, skipped: 0, addedCount: 0, startTime: 0 };
+function clearLine() { process.stdout.write('\r\x1b[K'); }
+function renderProgress() {
+  const s = _progressState;
+  const elapsed = Math.floor((Date.now() - s.startTime) / 1000);
+  const m = Math.floor(elapsed / 60), sec = elapsed % 60;
+  const timeStr = m > 0 ? `${m}m ${sec.toString().padStart(2, '0')}s` : `${sec}s`;
+  const pct = s.total > 0 ? Math.min(100, Math.round((s.done / s.total) * 100)) : 0;
+  const bar1 = '\u2588'.repeat(Math.floor(pct / 5));
+  const bar2 = '\u2591'.repeat(20 - Math.floor(pct / 5));
+  process.stdout.write(`\r  Items: [${s.done}/${s.total}]  ${bar1}${bar2}  ${pct}%  |  +${s.addedCount} new  |  ~${s.skipped} skip  |  ${timeStr}`);
+}
+
+function clearAndLog(msg) {
+  clearLine();
+  logger.info(msg);
+  if (_progressState.total > 0) renderProgress();
+}
+
+async function fetchAllPages() {
+  const first = await fetchSeriesList(1);
+  const totalPages = first.totalPages || 1;
+  let allItems = [...first.items];
+  for (let p = 2; p <= totalPages; p++) {
+    const { items } = await fetchSeriesList(p);
+    allItems = allItems.concat(items);
+    const pct = Math.round((p / totalPages) * 100);
+    const bar1 = '\u2588'.repeat(Math.floor(pct / 5));
+    const bar2 = '\u2591'.repeat(20 - Math.floor(pct / 5));
+    process.stdout.write(`\r  Pages: [${p}/${totalPages}]  ${bar1}${bar2}  ${pct}%`);
+  }
+  clearLine();
+  logger.info(`Fetched ${allItems.length} items from ${totalPages} pages`);
+  return { items: allItems, totalPages };
+}
+
+async function processPool(items, processor, poolSize) {
   let idx = 0;
   const results = [];
+  const state = _progressState;
+  state.done = 0;
+  state.total = items.length;
+  state.skipped = 0;
+  state.addedCount = 0;
+  state.startTime = Date.now();
+
   async function worker() {
     while (idx < items.length) {
       const i = idx++;
       const item = items[i];
-      logger.info(`\n[${i + 1}/${items.length}] ${item.title}`);
-      try { const r = await processor(item); if (r) results.push(r); } catch (err) { logger.error(`Failed ${item.title}: ${err.message}`); }
+      try {
+        const r = await processor(item);
+        if (r) { results.push(r); state.addedCount++; }
+        else state.skipped++;
+      } catch (err) { /* error logged by processor */ }
+      state.done++;
+      renderProgress();
     }
   }
   const workers = Array.from({ length: Math.min(poolSize, items.length) }, () => worker());
@@ -361,45 +408,25 @@ async function processPool(items, processor, poolSize = PARALLEL_ITEMS) {
 }
 
 async function scrapeIncremental(context) {
-  logger.info('=== Incremental (page 1) ===');
-  const { items } = await fetchSeriesList(1);
-  const added = await processPool(items, item => processAnimeItem(item, context));
-  logger.info(`Done: ${added.length} added/updated`);
+  logger.info('=== Incremental (all pages) ===');
+  const { items } = await fetchAllPages();
+  const added = await processPool(items, item => processAnimeItem(item, context), PARALLEL_ITEMS);
+  clearLine();
+  const elapsed = Math.floor((Date.now() - _progressState.startTime) / 1000);
+  const m = Math.floor(elapsed / 60), sec = elapsed % 60;
+  logger.info(`Done: ${added.length} added, ${_progressState.skipped} skipped in ${m > 0 ? m + 'm ' : ''}${sec}s`);
   return added.length;
 }
 
 async function scrapeFull(context) {
-  logger.info('=== Full scan ===');
-  const first = await fetchSeriesList(1);
-  const totalPages = first.totalPages || 1;
-  let allItems = [...first.items];
-  logger.info(`${totalPages} pages, ${allItems.length} items on page 1`);
-
-  // Fetch remaining pages in parallel
-  const pages = await Promise.all(Array.from({ length: totalPages - 1 }, (_, i) => fetchSeriesList(i + 2)));
-  for (const p of pages) allItems = allItems.concat(p.items);
-  logger.info(`Total items: ${allItems.length}`);
-
-  const added = await processPool(allItems, item => processAnimeItem(item, context));
-  logger.info(`Done: ${added.length} added/updated`);
+  logger.info('=== Full scan (all pages) ===');
+  const { items } = await fetchAllPages();
+  const added = await processPool(items, item => processAnimeItem(item, context), PARALLEL_ITEMS);
+  clearLine();
+  const elapsed = Math.floor((Date.now() - _progressState.startTime) / 1000);
+  const m = Math.floor(elapsed / 60), sec = elapsed % 60;
+  logger.info(`Done: ${added.length} added, ${_progressState.skipped} skipped in ${m > 0 ? m + 'm ' : ''}${sec}s`);
   return added.length;
 }
 
-// Scan only the first N pages (for daily GitHub Actions runs)
-async function scrapeDaily(context, maxPages = 5) {
-  logger.info(`=== Daily scan (first ${maxPages} pages) ===`);
-  let allItems = [];
-  const first = await fetchSeriesList(1);
-  allItems = first.items;
-  const pagesToFetch = Math.min(maxPages - 1, (first.totalPages || 1) - 1);
-  if (pagesToFetch > 0) {
-    const pages = await Promise.all(Array.from({ length: pagesToFetch }, (_, i) => fetchSeriesList(i + 2)));
-    for (const p of pages) allItems = allItems.concat(p.items);
-  }
-  logger.info(`Total items: ${allItems.length} (from ${Math.min(maxPages, first.totalPages || 1)} pages)`);
-  const added = await processPool(allItems, item => processAnimeItem(item, context));
-  logger.info(`Daily scan done: ${added.length} added/updated`);
-  return added.length;
-}
-
-module.exports = { fetchSeriesList, fetchAnimeDetail, processAnimeItem, scrapeIncremental, scrapeFull, scrapeDaily };
+module.exports = { fetchSeriesList, fetchAnimeDetail, processAnimeItem, scrapeIncremental, scrapeFull };
