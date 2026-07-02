@@ -362,9 +362,9 @@ function clearAndLog(msg) {
   if (_progressState.total > 0) renderProgress();
 }
 
-async function fetchAllPages() {
+async function fetchAllPages(maxPages) {
   const first = await fetchSeriesList(1);
-  const totalPages = first.totalPages || 1;
+  const totalPages = maxPages ? Math.min(maxPages, first.totalPages || 1) : (first.totalPages || 1);
   let allItems = [...first.items];
   for (let p = 2; p <= totalPages; p++) {
     const { items } = await fetchSeriesList(p);
@@ -407,9 +407,9 @@ async function processPool(items, processor, poolSize) {
   return results;
 }
 
-async function scrapeIncremental(context) {
-  logger.info('=== Incremental (all pages) ===');
-  const { items } = await fetchAllPages();
+async function scrapeIncremental(context, maxPages) {
+  logger.info(`=== Incremental${maxPages ? ` (${maxPages} page${maxPages > 1 ? 's' : ''})` : ' (all pages)'} ===`);
+  const { items } = await fetchAllPages(maxPages);
   const added = await processPool(items, item => processAnimeItem(item, context), PARALLEL_ITEMS);
   clearLine();
   const elapsed = Math.floor((Date.now() - _progressState.startTime) / 1000);
@@ -418,9 +418,9 @@ async function scrapeIncremental(context) {
   return added.length;
 }
 
-async function scrapeFull(context) {
-  logger.info('=== Full scan (all pages) ===');
-  const { items } = await fetchAllPages();
+async function scrapeFull(context, maxPages) {
+  logger.info(`=== Full scan${maxPages ? ` (${maxPages} page${maxPages > 1 ? 's' : ''})` : ' (all pages)'} ===`);
+  const { items } = await fetchAllPages(maxPages);
   const added = await processPool(items, item => processAnimeItem(item, context), PARALLEL_ITEMS);
   clearLine();
   const elapsed = Math.floor((Date.now() - _progressState.startTime) / 1000);

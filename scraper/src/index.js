@@ -28,7 +28,7 @@ async function scrapeFull() {
   const log = await db.logScrapingStart('full');
   logger.info('=== Starting FULL scrape ===');
   try {
-    const totalResults = await withBrowser(ctx => toonstream.scrapeFull(ctx));
+    const totalResults = await withBrowser(ctx => toonstream.scrapeFull(ctx, maxPages));
     await db.logScrapingComplete(log.id, totalResults, null);
     logger.info(`=== FULL scrape complete: ${totalResults} added/updated ===`);
   } catch (err) {
@@ -41,7 +41,7 @@ async function scrapeIncremental() {
   const log = await db.logScrapingStart('incremental');
   logger.info('=== Starting INCREMENTAL scrape ===');
   try {
-    const totalItems = await withBrowser(ctx => toonstream.scrapeIncremental(ctx));
+    const totalItems = await withBrowser(ctx => toonstream.scrapeIncremental(ctx, maxPages));
     await db.logScrapingComplete(log.id, totalItems, null);
     logger.info(`=== Incremental done: ${totalItems} added/updated ===`);
   } catch (err) {
@@ -50,10 +50,14 @@ async function scrapeIncremental() {
   }
 }
 
+let maxPages = 0;
+
 async function main() {
   const args = process.argv.slice(2);
   const typeFlag = args.find((a) => a.startsWith('--type='));
   const type = typeFlag ? typeFlag.split('=')[1] : 'incremental';
+  const maxPagesFlag = args.find((a) => a.startsWith('--max-pages='));
+  if (maxPagesFlag) maxPages = parseInt(maxPagesFlag.split('=')[1], 10) || 0;
 
   try {
     switch (type) {
