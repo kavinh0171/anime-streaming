@@ -922,24 +922,11 @@ const App = {
     let sourceType = 'hls';
     let videoId = 'hls-video-' + epId.replace(/[^a-zA-Z0-9]/g, '');
 
-    // Try to get a fresh HLS URL from the server API (always returns non-expired URL)
-    try {
-      const resp = await fetch('/api/video-source/' + epId);
-      console.log('Video refresh API:', resp.status, resp.statusText);
-      if (resp.ok) {
-        const data = await resp.json();
-        console.log('Fresh HLS URL:', data.source_url?.substring(0, 60));
-        videoUrl = data.source_url;
-        sourceType = data.source_type || 'hls';
-      } else {
-        const err = await resp.text().catch(() => '');
-        console.log('API error:', err.substring(0, 100));
-      }
-    } catch (e) { console.log('API fetch error:', e.message); }
-    if (!videoUrl) {
-      console.log('Using fallback URL:', fallbackUrl?.substring(0, 60));
-      videoUrl = fallbackUrl;
-    }
+    // Use the HLS proxy to avoid CORS issues with as-cdn21.top
+    // The proxy fetches fresh HLS manifest + rewrites segment URLs server-side
+    videoUrl = '/api/hls-proxy/' + epId + '/master.m3u8';
+    sourceType = 'hls';
+    console.log('Using HLS proxy:', videoUrl);
 
     WatchHistory.add({
       slug, animeTitle: anime.title, episodeId: epId,
