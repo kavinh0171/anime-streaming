@@ -78,15 +78,33 @@ async function fetchSeriesList(pageNum = 1) {
 async function extractFromFetch(slug) {
   try {
     const $ = cheerio.load(await fetchText(`${BASE}/episode/${slug}/`));
-    const embedSrc = $('#aa-options iframe[src], .video-player iframe[src], .aa-tb.hdd.on iframe[src], iframe:not([src=""])').first().attr('src')
-      || $('iframe[src*="trembed"]').first().attr('src')
-      || $('iframe[src*="toonstream"]').first().attr('src');
-    if (!embedSrc) return null;
-    const $$ = cheerio.load(await fetchText(embedSrc));
-    const playerUrl = $$('.Video iframe[src*="as-cdn"], iframe[src*="as-cdn"]').first().attr('src');
-    if (!playerUrl) return null;
-    const hash = playerUrl.split('/').pop();
-    return { embedSrc, hash, playerUrl };
+    // Collect ALL iframe src options (try active first, then data-src for inactive servers)
+    const iframes = [];
+    $('#aa-options iframe[src], .video-player iframe[src], .aa-tb.hdd.on iframe[src]').each((i, el) => {
+      const src = $(el).attr('src');
+      if (src) iframes.push(src);
+    });
+    $('iframe[src*="trembed"], iframe[src*="toonstream"]').each((i, el) => {
+      const src = $(el).attr('src') || $(el).attr('data-src');
+      if (src && !iframes.includes(src)) iframes.push(src);
+    });
+    // Also collect data-src from any video iframe
+    $('#aa-options iframe[data-src]').each((i, el) => {
+      const src = $(el).attr('data-src');
+      if (src && !iframes.includes(src)) iframes.push(src);
+    });
+    // Try each iframe src until one yields a CDN URL
+    for (const embedSrc of iframes) {
+      try {
+        const $$ = cheerio.load(await fetchText(embedSrc));
+        const playerUrl = $$('.Video iframe[src*="as-cdn"], iframe[src*="as-cdn"]').first().attr('src');
+        if (playerUrl) {
+          const hash = new URL(playerUrl).searchParams.get('data') || playerUrl.split('/').pop();
+          return { embedSrc, hash, playerUrl };
+        }
+      } catch {}
+    }
+    return null;
   } catch { return null; }
 }
 
@@ -107,7 +125,7 @@ async function extractFromBrowser(slug, context) {
       return f ? f.getAttribute('src') : null;
     }).catch(() => null);
     if (!playerUrl) return null;
-    const hash = playerUrl.split('/').pop();
+    const hash = new URL(playerUrl).searchParams.get('data') || playerUrl.split('/').pop();
     return { embedSrc, hash, playerUrl };
   } finally { await page.close().catch(() => {}); }
 }
