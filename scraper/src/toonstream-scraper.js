@@ -239,10 +239,17 @@ async function fetchAnimeDetailBrowser(slug, context) {
       const eps = await extractEps();
       if (eps.length > 0) seasons.push({ season_number: 1, postId: '', episodes: eps });
     } else {
+      // Open the season dropdown
+      await page.evaluate(() => { const btn = document.querySelector('.choose-season .aa-lnk'); if (btn) btn.click(); });
+      await page.waitForTimeout(500);
       for (const btn of seasonBtns) {
         const snum = parseInt(await btn.getAttribute('data-season')) || 1;
         const postId = await btn.getAttribute('data-post') || '';
-        await page.evaluate(n => { document.querySelectorAll('.choose-season .aa-cnt li a').forEach(a => { if (parseInt(a.getAttribute('data-season')) === n) a.click(); }); }, snum);
+        // Click season button (evaluate bypasses visibility check)
+        await page.evaluate((n) => {
+          const links = document.querySelectorAll('.choose-season .aa-cnt li a');
+          for (const a of links) { if (parseInt(a.getAttribute('data-season')) === n) { a.click(); break; } }
+        }, snum);
         await page.waitForTimeout(2000);
         const eps = await extractEps();
         if (eps.length > 0) seasons.push({ season_number: snum, postId, episodes: eps });
