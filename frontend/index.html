@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AnimeStream - Watch Anime Online</title>
+  <meta name="description" content="Stream the latest anime episodes and series online. Watch your favorite anime with English subtitles.">
+  <link rel="stylesheet" href="/css/style.css">
+  <script>
+    window.__SUPABASE_URL__ = 'https://tzseycpzlhqdckooctvd.supabase.co';
+    window.__SUPABASE_ANON_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6c2V5Y3B6bGhxZGNrb29jdHZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4OTMyMTYsImV4cCI6MjA5ODQ2OTIxNn0.iRpFcKTHvMgIxyy19VnX27_1rkwCTsw0PSWp3IbYIGE';
+  </script>
+</head>
+<body>
+
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></symbol>
+    <symbol id="icon-star-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></symbol>
+    <symbol id="icon-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="icon-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="icon-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="icon-tv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><path d="m17 2-5 5-5-5"/></symbol>
+    <symbol id="icon-film" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5"/></symbol>
+    <symbol id="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="icon-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="icon-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="icon-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></symbol>
+    <symbol id="icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></symbol>
+    <symbol id="icon-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol>
+    <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
+    <symbol id="icon-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+    <symbol id="icon-x-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
+  </defs>
+</svg>
+
+<div class="nav-overlay" id="nav-overlay"></div>
+<aside class="nav-drawer" id="nav-drawer">
+  <div class="drawer-header">
+    <a href="/" class="logo" onclick="event.preventDefault();App.navigate('/')">Anime<span>Stream</span></a>
+    <button class="drawer-close" aria-label="Close menu">
+      <svg class="icon" aria-hidden="true"><use href="#icon-x"/></svg>
+    </button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="/" onclick="event.preventDefault();event.stopPropagation();App.navigate('/')">
+      <svg class="icon" aria-hidden="true"><use href="#icon-tv"/></svg> Home
+    </a>
+    <a href="/browse" onclick="event.preventDefault();event.stopPropagation();App.navigate('/browse')">
+      <svg class="icon" aria-hidden="true"><use href="#icon-film"/></svg> Browse
+    </a>
+    <a href="/browse?type=series" onclick="event.preventDefault();event.stopPropagation();App.navigate('/browse?type=series')">
+      <svg class="icon" aria-hidden="true"><use href="#icon-tv"/></svg> Series
+    </a>
+    <a href="/browse?type=movie" onclick="event.preventDefault();event.stopPropagation();App.navigate('/browse?type=movie')">
+      <svg class="icon" aria-hidden="true"><use href="#icon-film"/></svg> Movies
+    </a>
+    <a href="/history" onclick="event.preventDefault();event.stopPropagation();App.navigate('/history')">
+      <svg class="icon" aria-hidden="true"><use href="#icon-history"/></svg> History
+    </a>
+  </nav>
+</aside>
+
+<header class="header">
+  <div class="container">
+    <a href="/" class="logo" onclick="event.preventDefault();App.navigate('/')">Anime<span>Stream</span></a>
+    <nav class="nav">
+      <a href="/" class="active" onclick="event.preventDefault();App.navigate('/')">Home</a>
+      <a href="/browse" onclick="event.preventDefault();App.navigate('/browse')">Browse</a>
+      <a href="/browse?type=series" onclick="event.preventDefault();App.navigate('/browse?type=series')">Series</a>
+      <a href="/browse?type=movie" onclick="event.preventDefault();App.navigate('/browse?type=movie')">Movies</a>
+    </nav>
+    <div class="header-right">
+      <div class="search-bar collapsed" id="search-bar">
+        <button class="search-toggle" aria-label="Toggle search">
+          <svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg>
+        </button>
+        <input type="text" placeholder="Search anime..." aria-label="Search anime">
+        <button class="search-close" aria-label="Close search">
+          <svg class="icon" aria-hidden="true"><use href="#icon-x"/></svg>
+        </button>
+        <div class="search-results"></div>
+      </div>
+      <button class="mobile-menu-btn" aria-label="Toggle menu">
+        <svg class="icon" aria-hidden="true"><use href="#icon-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<main></main>
+<nav class="bottom-nav" id="bottom-nav">
+  <a href="/" data-nav="home" onclick="event.preventDefault();App.navigate('/')">
+    <svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>
+    <span>Home</span>
+  </a>
+  <a href="/browse" data-nav="browse" onclick="event.preventDefault();App.navigate('/browse')">
+    <svg class="icon" aria-hidden="true"><use href="#icon-grid"/></svg>
+    <span>Browse</span>
+  </a>
+  <a href="/browse?type=series" data-nav="series" onclick="event.preventDefault();App.navigate('/browse?type=series')">
+    <svg class="icon" aria-hidden="true"><use href="#icon-tv"/></svg>
+    <span>Series</span>
+  </a>
+  <a href="/browse?type=movie" data-nav="movie" onclick="event.preventDefault();App.navigate('/browse?type=movie')">
+    <svg class="icon" aria-hidden="true"><use href="#icon-film"/></svg>
+    <span>Movies</span>
+  </a>
+  <a href="/history" data-nav="history" onclick="event.preventDefault();App.navigate('/history')">
+    <svg class="icon" aria-hidden="true"><use href="#icon-history"/></svg>
+    <span>History</span>
+  </a>
+</nav>
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1233 @@
+[
+  {
+    "url": "https://animesalt.streamindia.co.in/api/home",
+    "data": {
+      "success": true,
+      "data": {
+        "hero": [
+          {
+            "title": "Naruto Shippūden",
+            "overview": "After two and a half years of intense training with the legendary Sannin Jiraiya, Naruto Uzumaki returns to the Hidden Leaf Village. But the world has changed — the Akatsuki organization is hunting Jinchuriki, and his best friend Sasuke has fallen deeper into darkness. Naruto must now protect his home, save his friend, and uncover the truth about the ninja world's troubled history. This is the story of a boy growing into a hero, facing powerful enemies, and learning what it truly means to become Hokage.",
+            "backdrop": "https://www.pixelstalk.net/wp-content/uploads/images6/Naruto-Shippuden-Wallpaper-HD-Free-download.jpg",
+            "rating": "8.5",
+            "year": "2007",
+            "id": "series-naruto-shippuden",
+            "type": "series"
+          },
+          {
+            "title": "One Piece",
+            "overview": "Gol D. Roger, the King of the Pirates, left behind the world's greatest treasure — the One Piece. Years later, Monkey D. Luffy dreams of becoming the next Pirate King. With his rubber powers from eating a Devil Fruit and a crew of misfits, he sails the Grand Line. Together they face marine admirals, rival pirates, and world-shaking conspiracies. This epic tale is about freedom, friendship, and chasing your dreams no matter the cost.",
+            "backdrop": "https://www.pixelstalk.net/wp-content/uploads/images6/One-Piece-Wallpaper-HD-Free-download.png",
+            "rating": "8.7",
+            "year": "1999",
+            "id": "series-one-piece",
+            "type": "series"
+          },
+          {
+            "title": "Attack on Titan",
+            "overview": "After a century of peace behind massive walls, humanity is once again attacked by the man-eating Titans. Eren Yeager watches as his mother is devoured, sparking a burning desire for revenge. He joins the Survey Corps to fight back and uncover the truth about the Titans' origin. But the deeper he digs, the darker the secrets become — and the line between friend and foe blurs. This is a brutal story of survival, betrayal, and the cost of freedom.",
+            "backdrop": "https://www.pixelstalk.net/wp-content/uploads/2016/10/1920x1080-Attack-On-Titan-Background.jpg",
+            "rating": "8.7",
+            "year": "2013",
+            "id": "series-attack-on-titan",
+            "type": "series"
+          },
+          {
+            "title": "Death Note",
+            "overview": "Brilliant but bored high school student Light Yagami finds a supernatural notebook dropped by the death god Ryuk. Anyone whose name is written in it dies. Light decides to become the god of a new world by killing criminals, while the world's greatest detective, L, tries to stop him. What follows is a high-stakes cat-and-mouse game of wits, justice, and morality. Is Light a hero or a villain? The Death Note will make you question everything.",
+            "backdrop": "https://wallpapers-clan.com/wp-content/uploads/2024/07/death-note-l-dark-red-apple-ultrawide-wallpaper-preview.jpg",
+            "rating": "8.6",
+            "year": "2006",
+            "id": "series-death-note",
+            "type": "series"
+          },
+          {
+            "title": "Demon Slayer: Kimetsu no Yaiba",
+            "overview": "Tanjiro Kamado returns home one day to find his entire family slaughtered by demons. His sister Nezuko survives — but she has been turned into a demon herself. Determined to find a cure and avenge his family, Tanjiro joins the Demon Slayer Corps. Armed with water breathing techniques and guided by loyalty, he battles terrifying demons while searching for the demon king, Muzan Kibutsuji. This emotional journey is about love, loss, and the unbreakable bond between siblings.",
+            "backdrop": "https://image.tmdb.org/t/p/original/3GQKYh6Trm8pxd2AypovoYQf4Ay.jpg",
+            "rating": "8.6",
+            "year": "2019",
+            "id": "series-demon-slayer",
+            "type": "series"
+          }
+        ],
+        "latest_releases": [
+          {
+            "title": "Wistoria: Wand and Sword",
+            "image": "https://image.tmdb.org/t/p/w500/5n0IZQA9MiXn5JBKZibtNhhFSAZ.jpg",
+            "id": "series-wistoria-wand-and-sword",
+            "type": "series",
+            "season": "Season 2",
+            "episodes": "EP:6-9"
+          },
+          {
+            "title": "Witch Hat Atelier",
+            "image": "https://image.tmdb.org/t/p/w500/78m1Tv3suHmUryTI9VNPwKLKjHZ.jpg",
+            "id": "series-witch-hat-atelier",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:1-10"
+          },
+          {
+            "title": "Marriage Toxin",
+            "image": "https://image.tmdb.org/t/p/w500/2b1akkaoutSo3xbykjAKnEb92Rs.jpg",
+            "id": "series-marriage-toxin",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:6-10"
+          },
+          {
+            "title": "Eren the Southpaw",
+            "image": "https://image.tmdb.org/t/p/w500/AkhxnKGDcNKikr1xDP4mi1wpfEr.jpg",
+            "id": "series-eren-the-southpaw",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:5-10"
+          },
+          {
+            "title": "An Observation Log of My Fiancée Who Calls Herself a Villainess",
+            "image": "https://image.tmdb.org/t/p/w500/xlpYhXiyX52t6Dtg1fFN0CqLbK4.jpg",
+            "id": "series-an-observation-log-of-my-fiancee-who-calls-herself-a-villainess",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:6-10"
+          },
+          {
+            "title": "That Time I Got Reincarnated as a Slime",
+            "image": "https://image.tmdb.org/t/p/w500/jQb1ztdko9qc4aCdnMXShcIHXRG.jpg",
+            "id": "series-that-time-i-got-reincarnated-as-a-slime",
+            "type": "series",
+            "season": "Season 4",
+            "episodes": "EP:1-4"
+          },
+          {
+            "title": "Daemons of the Shadow Realm",
+            "image": "https://image.tmdb.org/t/p/w500/vIE1llfr1lcmzlsV4xn8vhgtlQN.jpg",
+            "id": "series-daemons-of-the-shadow-realm",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:7-10"
+          },
+          {
+            "title": "SNOWBALL EARTH",
+            "image": "https://image.tmdb.org/t/p/w500/rLin4VCC1QK7MDmeaSBZqw7SWRu.jpg",
+            "id": "series-snowball-earth",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:7-10"
+          },
+          {
+            "title": "Agents of the Four Seasons Dance of Spring",
+            "image": "https://image.tmdb.org/t/p/w500/zbzbUDLO3iTAuXDmoqtpOsrtLPi.jpg",
+            "id": "series-agents-of-the-four-seasons-dance-of-spring",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:8-11"
+          },
+          {
+            "title": "Dr. STONE",
+            "image": "https://image.tmdb.org/t/p/w500/xbZQ3fDl0y5mt0ARwfeyrgQ4JTw.jpg",
+            "id": "series-dr-stone",
+            "type": "series",
+            "season": "Season 4",
+            "episodes": "EP:33-37"
+          },
+          {
+            "title": "The Warrior Princess and the Barbaric King",
+            "image": "https://image.tmdb.org/t/p/w500/fv0Mr6ahZfmwksgDpVO46iMteA6.jpg",
+            "id": "series-the-warrior-princess-and-the-barbaric-king",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:5-9"
+          },
+          {
+            "title": "Re Zero - Starting Life in Another World",
+            "image": "https://image.tmdb.org/t/p/w500/aRwmcX36r1ZpR5Xq5mmFcpUDQ8J.jpg",
+            "id": "series-re-zero-starting-life-in-another-world",
+            "type": "series",
+            "season": "Season 4",
+            "episodes": "EP:1-4"
+          },
+          {
+            "title": "The Beginning After the End",
+            "image": "https://image.tmdb.org/t/p/w500/az0jQSgRLezKw5uHaEjPH20NexD.jpg",
+            "id": "series-the-beginning-after-the-end",
+            "type": "series",
+            "season": "Season 2",
+            "episodes": "EP:6-10"
+          },
+          {
+            "title": "Reborn as a Vending Machine, I Now Wander the Dungeon",
+            "image": "https://image.tmdb.org/t/p/w500/bY6oLDoxDyP7JNLVGjeO3udND4g.jpg",
+            "id": "series-reborn-as-a-vending-machine-i-now-wander-the-dungeon",
+            "type": "series",
+            "season": "Season 3",
+            "episodes": "EP:6-10"
+          },
+          {
+            "title": "LIAR GAME",
+            "image": "https://image.tmdb.org/t/p/w500/w8yyntTxZlDlZ2TR8kb4C92pmcO.jpg",
+            "id": "series-liar-game",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:7-10"
+          },
+          {
+            "title": "The Angel Next Door Spoils Me Rotten",
+            "image": "https://image.tmdb.org/t/p/w500/twCEEzmZZkgQIPXzw0JF350GO0P.jpg",
+            "id": "series-the-angel-next-door-spoils-me-rotten",
+            "type": "series",
+            "season": "Season 2",
+            "episodes": "EP:6-9"
+          },
+          {
+            "title": "Scum of the Brave",
+            "image": "https://image.tmdb.org/t/p/w500/kSJv65fW98dUqRD5f0ahLLYoZQN.jpg",
+            "id": "series-scum-of-the-brave",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:5-16"
+          },
+          {
+            "title": "The Ramparts of Ice",
+            "image": "https://image.tmdb.org/t/p/w500/rke9UC2QrogvxiQD9TGpbvqDosi.jpg",
+            "id": "series-the-ramparts-of-ice",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:1-10"
+          }
+        ],
+        "popular_series": [
+          {
+            "title": "Naruto Shippuden",
+            "image": "https://image.tmdb.org/t/p/w500/kV27j3Nz4d5z8u6mN3EJw9RiLg2.jpg",
+            "id": "series-naruto-shippuden",
+            "type": "series"
+          },
+          {
+            "title": "Jujutsu Kaisen",
+            "image": "https://image.tmdb.org/t/p/w500/fHpKWq9ayzSk8nSwqRuaAUemRKh.jpg",
+            "id": "series-jujutsu-kaisen",
+            "type": "series"
+          },
+          {
+            "title": "Solo Leveling",
+            "image": "https://image.tmdb.org/t/p/w500/rsOApVLbIQEcNkqSlOxNPyg3FyI.jpg",
+            "id": "series-solo-leveling",
+            "type": "series"
+          },
+          {
+            "title": "One Piece",
+            "image": "https://image.tmdb.org/t/p/w500/uiIB9ctqZFbfRXXimtpmZb5dusi.jpg",
+            "id": "series-one-piece",
+            "type": "series"
+          },
+          {
+            "title": "Death Note",
+            "image": "https://image.tmdb.org/t/p/w500/tCZFfYTIwrR7n94J6G14Y4hAFU6.jpg",
+            "id": "series-death-note",
+            "type": "series"
+          },
+          {
+            "title": "Naruto",
+            "image": "https://image.tmdb.org/t/p/w500/xppeysfvDKVx775MFuH8Z9BlpMk.jpg",
+            "id": "series-naruto",
+            "type": "series"
+          },
+          {
+            "title": "Attack on Titan",
+            "image": "https://image.tmdb.org/t/p/w500/hTP1DtLGFamjfu8WqjnuQdP1n4i.jpg",
+            "id": "series-attack-on-titan",
+            "type": "series"
+          },
+          {
+            "title": "Demon Slayer",
+            "image": "https://image.tmdb.org/t/p/w500/mnpgxMLvUJYSXwydB5E1dqLukwy.jpg",
+            "id": "series-demon-slayer",
+            "type": "series"
+          },
+          {
+            "title": "Kaiju No. 8",
+            "image": "https://image.tmdb.org/t/p/w500/g4Da5pToG1E0moyaMhP4RewTBCl.jpg",
+            "id": "series-kaiju-no-8",
+            "type": "series"
+          },
+          {
+            "title": "One-Punch Man",
+            "image": "https://image.tmdb.org/t/p/w500/jbYJuxfZMpYDalkiOnBcCv9TaL.jpg",
+            "id": "series-one-punch-man",
+            "type": "series"
+          },
+          {
+            "title": "The Daily Life of the Immortal King",
+            "image": "https://image.tmdb.org/t/p/w500/fR6QmzmINCDaCJ3KDM9x3o4g6RL.jpg",
+            "id": "series-the-daily-life-of-the-immortal-king",
+            "type": "series"
+          },
+          {
+            "title": "Dan Da Dan",
+            "image": "https://image.tmdb.org/t/p/w500/6qfZAOEUFIrbUH3JvePclx1nXzz.jpg",
+            "id": "series-dan-da-dan",
+            "type": "series"
+          },
+          {
+            "title": "Spy x Family",
+            "image": "https://image.tmdb.org/t/p/w500/3r4LYFuXrg3G8fepysr4xSLWnQL.jpg",
+            "id": "series-spy-x-family",
+            "type": "series"
+          },
+          {
+            "title": "My Hero Academia",
+            "image": "https://image.tmdb.org/t/p/w500/phuYuzqWW9ru8EA3HVjE9W2Rr3M.jpg",
+            "id": "series-my-hero-academia",
+            "type": "series"
+          },
+          {
+            "title": "Tokyo Revengers",
+            "image": "https://image.tmdb.org/t/p/w500/arB3L9pZZBSzUPSC8BEv8c3X0bF.jpg",
+            "id": "series-tokyo-revengers",
+            "type": "series"
+          },
+          {
+            "title": "My Status as an Assassin Obviously Exceeds the Hero's",
+            "image": "https://image.tmdb.org/t/p/w500/oQk3aXYEa4TMd9rAYgzDpAYTU8P.jpg",
+            "id": "series-my-status-as-an-assassin-obviously-exceeds-the-heros",
+            "type": "series"
+          },
+          {
+            "title": "Classroom of the Elite",
+            "image": "https://image.tmdb.org/t/p/w500/yuHanbUUIv2UWRxxQFt9n8jtmOJ.jpg",
+            "id": "series-classroom-of-the-elite",
+            "type": "series"
+          },
+          {
+            "title": "Gachiakuta",
+            "image": "https://image.tmdb.org/t/p/w500/84LdrRRvpWk8g0EaaW7z3eKdfum.jpg",
+            "id": "series-gachiakuta",
+            "type": "series"
+          },
+          {
+            "title": "Black Clover",
+            "image": "https://image.tmdb.org/t/p/w500/kaMisKeOoTBPxPkbC3OW7Wgt6ON.jpg",
+            "id": "series-black-clover",
+            "type": "series"
+          },
+          {
+            "title": "Lord of Mysteries",
+            "image": "https://image.tmdb.org/t/p/w500/c8fHePq3yTn3WvZd4hupkHwsjm5.jpg",
+            "id": "series-lord-of-mysteries",
+            "type": "series"
+          },
+          {
+            "title": "Dr. STONE",
+            "image": "https://image.tmdb.org/t/p/w500/xbZQ3fDl0y5mt0ARwfeyrgQ4JTw.jpg",
+            "id": "series-dr-stone",
+            "type": "series"
+          },
+          {
+            "title": "My Dress-Up Darling",
+            "image": "https://image.tmdb.org/t/p/w500/A6mxBwvvv63JXZm3xXKv4SugE0L.jpg",
+            "id": "series-my-dress-up-darling",
+            "type": "series"
+          },
+          {
+            "title": "With You, Our Love Will Make It Through",
+            "image": "https://image.tmdb.org/t/p/w500/hqx5GLLcv1SuW3AAmv2ZFa7l7bF.jpg",
+            "id": "series-with-you-our-love-will-make-it-through",
+            "type": "series"
+          },
+          {
+            "title": "A Gatherer's Adventure in Isekai",
+            "image": "https://image.tmdb.org/t/p/w500/AtpIf9wnT6IaHoG31XsdqZEEf80.jpg",
+            "id": "series-a-gatherers-adventure-in-isekai",
+            "type": "series"
+          },
+          {
+            "title": "Tojima Wants to Be a Kamen Rider",
+            "image": "https://image.tmdb.org/t/p/w500/bD80ugDX7krshLcWxnqRYCOQPoo.jpg",
+            "id": "series-tojima-wants-to-be-a-kamen-rider",
+            "type": "series"
+          }
+        ],
+        "popular_movies": [
+          {
+            "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
+            "image": "https://image.tmdb.org/t/p/w500/aFRDH3P7TX61FVGpaLhKr6QiOC1.jpg",
+            "id": "movies-demon-slayer-kimetsu-no-yaiba-infinity-castle",
+            "type": "movie"
+          },
+          {
+            "title": "Jujutsu Kaisen 0",
+            "image": "https://image.tmdb.org/t/p/w500/23oJaeBh0FDk2mQ2P240PU9Xxfh.jpg",
+            "id": "movies-jujutsu-kaisen-0",
+            "type": "movie"
+          },
+          {
+            "title": "Chainsaw Man the Movie: Reze Arc",
+            "image": "https://image.tmdb.org/t/p/w500/xdzLBZjCVSEsic7m7nJc4jNJZVW.jpg",
+            "id": "movies-chainsaw-man-the-movie-reze-arc",
+            "type": "movie"
+          },
+          {
+            "title": "Your Name.",
+            "image": "https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg",
+            "id": "movies-your-name",
+            "type": "movie"
+          },
+          {
+            "title": "Black Clover: Sword of the Wizard King",
+            "image": "https://image.tmdb.org/t/p/w500/9YEGawvjaRgnyW6QVcUhFJPFDco.jpg",
+            "id": "movies-black-clover-sword-of-the-wizard-king",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon the Movie: Nobita's Earth Symphony",
+            "image": "https://image.tmdb.org/t/p/w500/1W5Kg4K27U3dx9Kxb8DaE6WFLHI.jpg",
+            "id": "movies-doraemon-the-movie-nobitas-earth-symphony",
+            "type": "movie"
+          },
+          {
+            "title": "Shinchan Movie: The Spicy Kasukabe Dancers",
+            "image": "https://image.tmdb.org/t/p/w500/1TfdgQbZXuEswjqLYlsVvhHw0Py.jpg",
+            "id": "movies-shinchan-movie-the-spicy-kasukabe-dancers",
+            "type": "movie"
+          },
+          {
+            "title": "Weathering with You",
+            "image": "https://image.tmdb.org/t/p/w500/qgrk7r1fV4IjuoeiGS5HOhXNdLJ.jpg",
+            "id": "movies-weathering-with-you",
+            "type": "movie"
+          },
+          {
+            "title": "Suzume",
+            "image": "https://image.tmdb.org/t/p/w500/yStW1TXF5s7Tbtu9KjIZEaWl6HL.jpg",
+            "id": "movies-suzume",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: Nobita's Chronicle of the Moon Exploration",
+            "image": "https://image.tmdb.org/t/p/w500/zAZ43208e643rB3pcx8jsLqc6B9.jpg",
+            "id": "movies-doraemon-nobitas-chronicle-of-the-moon-exploration",
+            "type": "movie"
+          },
+          {
+            "title": "Dragon Ball Z: Battle of Gods",
+            "image": "https://image.tmdb.org/t/p/w500/nxZEdYcHMuD8SSuwusDnK9CD2H1.jpg",
+            "id": "movies-dragon-ball-z-battle-of-gods",
+            "type": "movie"
+          },
+          {
+            "title": "HAIKYU!! The Dumpster Battle",
+            "image": "https://image.tmdb.org/t/p/w500/ntRU0OA4etGGiMMmH1Yw0bnaMdW.jpg",
+            "id": "movies-haikyu-the-dumpster-battle",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: Nobita's Treasure Island",
+            "image": "https://image.tmdb.org/t/p/w500/t1YkpYAxzD1lxNbjoZBpvYWkucO.jpg",
+            "id": "movies-doraemon-nobitas-treasure-island",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: The Record of Nobita's Parallel Journey to the West",
+            "image": "https://image.tmdb.org/t/p/w500/sEL1XbKs3UezQfApuy5CchuQn6W.jpg",
+            "id": "movies-doraemon-the-record-of-nobitas-parallel-journey-to-the-west",
+            "type": "movie"
+          },
+          {
+            "title": "Transformers Prime: Beast Hunters - Predacons Rising",
+            "image": "https://image.tmdb.org/t/p/w500/4T4pQqr2RoVgWQYtIzDGMByktwq.jpg",
+            "id": "movies-transformers-prime-beast-hunters-predacons-rising",
+            "type": "movie"
+          },
+          {
+            "title": "Spy x Family Movie: Code: White",
+            "image": "https://image.tmdb.org/t/p/w500/riv537dUuKib4KXC6Rg7CINs4xO.jpg",
+            "id": "movies-spy-x-family-movie-code-white",
+            "type": "movie"
+          },
+          {
+            "title": "Dragon Ball Super: Super Hero",
+            "image": "https://image.tmdb.org/t/p/w500/pi0iZOEHeA3ih4p1IwAG4x2DZNH.jpg",
+            "id": "movies-dragon-ball-super-super-hero",
+            "type": "movie"
+          },
+          {
+            "title": "Shinchan Movie: Rakuga Kingdom",
+            "image": "https://image.tmdb.org/t/p/w500/xWv5pUwyf96MDImATZYx0toI7T7.jpg",
+            "id": "movies-shinchan-movie-rakuga-kingdom",
+            "type": "movie"
+          },
+          {
+            "title": "Ben 10 vs. the Universe: The Movie",
+            "image": "https://image.tmdb.org/t/p/w500/34KSOJVowmkeh6G0HZJMxqdHq6s.jpg",
+            "id": "movies-ben-10-vs-the-universe-the-movie",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: Nobita's Great Adventure in the Antarctic Kachi Kochi",
+            "image": "https://image.tmdb.org/t/p/w500/hcydn0Lr3DAixZFOaUmjoqoIFU6.jpg",
+            "id": "movies-doraemon-nobitas-great-adventure-in-the-antarctic-kachi-kochi",
+            "type": "movie"
+          },
+          {
+            "title": "Shinchan Movie: Very Very Tasty Tasty",
+            "image": "https://image.tmdb.org/t/p/w500/iPN3Vy71U0B7p1R667EdifmwW1b.jpg",
+            "id": "movies-shinchan-movie-very-very-tasty-tasty",
+            "type": "movie"
+          },
+          {
+            "title": "Shinchan Movie: The Legends of Ninja Mononoke",
+            "image": "https://image.tmdb.org/t/p/w500/wyYfIWUtetlfxor8ibugKXthdKE.jpg",
+            "id": "movies-shinchan-movie-the-legends-of-ninja-mononoke",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: Nobita's New Great Adventure Into the Underworld - The Seven Magic Users",
+            "image": "https://image.tmdb.org/t/p/w500/2PlFFcAq9PcFEGgA0Znvut3kmVL.jpg",
+            "id": "movies-doraemon-nobitas-new-great-adventure-into-the-underworld-the-seven-magic-users",
+            "type": "movie"
+          },
+          {
+            "title": "Baki Hanma VS Kengan Ashura",
+            "image": "https://image.tmdb.org/t/p/w500/etbHJxil0wHvYOCmibzFLsMcl2C.jpg",
+            "id": "movies-baki-hanma-vs-kengan-ashura",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: New Nobita's Great Demon - Peko and the Exploration Party of Five",
+            "image": "https://image.tmdb.org/t/p/w500/xKGMXQFGca4nKcO308aZ6nWz0Gc.jpg",
+            "id": "movies-doraemon-new-nobitas-great-demon-peko-and-the-exploration-party-of-five",
+            "type": "movie"
+          }
+        ]
+      },
+      "_fromCache": true
+    }
+  },
+  {
+    "url": "https://animesalt.streamindia.co.in/api/anime/series?page=1",
+    "data": {
+      "success": true,
+      "pagination": {
+        "currentPage": 1,
+        "totalPages": 33
+      },
+      "data": [
+        {
+          "title": "Witch Hat Atelier",
+          "image": "https://image.tmdb.org/t/p/w500/78m1Tv3suHmUryTI9VNPwKLKjHZ.jpg",
+          "id": "series-witch-hat-atelier",
+          "type": "series"
+        },
+        {
+          "title": "The Ramparts of Ice",
+          "image": "https://image.tmdb.org/t/p/w500/rke9UC2QrogvxiQD9TGpbvqDosi.jpg",
+          "id": "series-the-ramparts-of-ice",
+          "type": "series"
+        },
+        {
+          "title": "Overflow",
+          "image": "https://image.tmdb.org/t/p/w500/8RtwL5gxUvh9YViqjhNlVRvJpum.jpg",
+          "id": "series-overflow",
+          "type": "series"
+        },
+        {
+          "title": "An Observation Log of My Fiancée Who Calls Herself a Villainess",
+          "image": "https://image.tmdb.org/t/p/w500/xlpYhXiyX52t6Dtg1fFN0CqLbK4.jpg",
+          "id": "series-an-observation-log-of-my-fiancee-who-calls-herself-a-villainess",
+          "type": "series"
+        },
+        {
+          "title": "SNOWBALL EARTH",
+          "image": "https://image.tmdb.org/t/p/w500/rLin4VCC1QK7MDmeaSBZqw7SWRu.jpg",
+          "id": "series-snowball-earth",
+          "type": "series"
+        },
+        {
+          "title": "Eren the Southpaw",
+          "image": "https://image.tmdb.org/t/p/w500/AkhxnKGDcNKikr1xDP4mi1wpfEr.jpg",
+          "id": "series-eren-the-southpaw",
+          "type": "series"
+        },
+        {
+          "title": "The Warrior Princess and the Barbaric King",
+          "image": "https://image.tmdb.org/t/p/w500/fv0Mr6ahZfmwksgDpVO46iMteA6.jpg",
+          "id": "series-the-warrior-princess-and-the-barbaric-king",
+          "type": "series"
+        },
+        {
+          "title": "Marriage Toxin",
+          "image": "https://image.tmdb.org/t/p/w500/2b1akkaoutSo3xbykjAKnEb92Rs.jpg",
+          "id": "series-marriage-toxin",
+          "type": "series"
+        },
+        {
+          "title": "LIAR GAME",
+          "image": "https://image.tmdb.org/t/p/w500/w8yyntTxZlDlZ2TR8kb4C92pmcO.jpg",
+          "id": "series-liar-game",
+          "type": "series"
+        },
+        {
+          "title": "Agents of the Four Seasons Dance of Spring",
+          "image": "https://image.tmdb.org/t/p/w500/zbzbUDLO3iTAuXDmoqtpOsrtLPi.jpg",
+          "id": "series-agents-of-the-four-seasons-dance-of-spring",
+          "type": "series"
+        },
+        {
+          "title": "Daemons of the Shadow Realm",
+          "image": "https://image.tmdb.org/t/p/w500/vIE1llfr1lcmzlsV4xn8vhgtlQN.jpg",
+          "id": "series-daemons-of-the-shadow-realm",
+          "type": "series"
+        },
+        {
+          "title": "ONE PIECE Live Action",
+          "image": "https://image.tmdb.org/t/p/w500/blWCPEqDGLBuLB9u89CxP9ORQP4.jpg",
+          "id": "series-one-piece-live-action",
+          "type": "series"
+        }
+      ],
+      "_fromCache": true
+    }
+  },
+  {
+    "url": "https://animesalt.streamindia.co.in/api/home",
+    "data": {
+      "success": true,
+      "data": {
+        "hero": [
+          {
+            "title": "Naruto Shippūden",
+            "overview": "After two and a half years of intense training with the legendary Sannin Jiraiya, Naruto Uzumaki returns to the Hidden Leaf Village. But the world has changed — the Akatsuki organization is hunting Jinchuriki, and his best friend Sasuke has fallen deeper into darkness. Naruto must now protect his home, save his friend, and uncover the truth about the ninja world's troubled history. This is the story of a boy growing into a hero, facing powerful enemies, and learning what it truly means to become Hokage.",
+            "backdrop": "https://www.pixelstalk.net/wp-content/uploads/images6/Naruto-Shippuden-Wallpaper-HD-Free-download.jpg",
+            "rating": "8.5",
+            "year": "2007",
+            "id": "series-naruto-shippuden",
+            "type": "series"
+          },
+          {
+            "title": "One Piece",
+            "overview": "Gol D. Roger, the King of the Pirates, left behind the world's greatest treasure — the One Piece. Years later, Monkey D. Luffy dreams of becoming the next Pirate King. With his rubber powers from eating a Devil Fruit and a crew of misfits, he sails the Grand Line. Together they face marine admirals, rival pirates, and world-shaking conspiracies. This epic tale is about freedom, friendship, and chasing your dreams no matter the cost.",
+            "backdrop": "https://www.pixelstalk.net/wp-content/uploads/images6/One-Piece-Wallpaper-HD-Free-download.png",
+            "rating": "8.7",
+            "year": "1999",
+            "id": "series-one-piece",
+            "type": "series"
+          },
+          {
+            "title": "Attack on Titan",
+            "overview": "After a century of peace behind massive walls, humanity is once again attacked by the man-eating Titans. Eren Yeager watches as his mother is devoured, sparking a burning desire for revenge. He joins the Survey Corps to fight back and uncover the truth about the Titans' origin. But the deeper he digs, the darker the secrets become — and the line between friend and foe blurs. This is a brutal story of survival, betrayal, and the cost of freedom.",
+            "backdrop": "https://www.pixelstalk.net/wp-content/uploads/2016/10/1920x1080-Attack-On-Titan-Background.jpg",
+            "rating": "8.7",
+            "year": "2013",
+            "id": "series-attack-on-titan",
+            "type": "series"
+          },
+          {
+            "title": "Death Note",
+            "overview": "Brilliant but bored high school student Light Yagami finds a supernatural notebook dropped by the death god Ryuk. Anyone whose name is written in it dies. Light decides to become the god of a new world by killing criminals, while the world's greatest detective, L, tries to stop him. What follows is a high-stakes cat-and-mouse game of wits, justice, and morality. Is Light a hero or a villain? The Death Note will make you question everything.",
+            "backdrop": "https://wallpapers-clan.com/wp-content/uploads/2024/07/death-note-l-dark-red-apple-ultrawide-wallpaper-preview.jpg",
+            "rating": "8.6",
+            "year": "2006",
+            "id": "series-death-note",
+            "type": "series"
+          },
+          {
+            "title": "Demon Slayer: Kimetsu no Yaiba",
+            "overview": "Tanjiro Kamado returns home one day to find his entire family slaughtered by demons. His sister Nezuko survives — but she has been turned into a demon herself. Determined to find a cure and avenge his family, Tanjiro joins the Demon Slayer Corps. Armed with water breathing techniques and guided by loyalty, he battles terrifying demons while searching for the demon king, Muzan Kibutsuji. This emotional journey is about love, loss, and the unbreakable bond between siblings.",
+            "backdrop": "https://image.tmdb.org/t/p/original/3GQKYh6Trm8pxd2AypovoYQf4Ay.jpg",
+            "rating": "8.6",
+            "year": "2019",
+            "id": "series-demon-slayer",
+            "type": "series"
+          }
+        ],
+        "latest_releases": [
+          {
+            "title": "Wistoria: Wand and Sword",
+            "image": "https://image.tmdb.org/t/p/w500/5n0IZQA9MiXn5JBKZibtNhhFSAZ.jpg",
+            "id": "series-wistoria-wand-and-sword",
+            "type": "series",
+            "season": "Season 2",
+            "episodes": "EP:6-9"
+          },
+          {
+            "title": "Witch Hat Atelier",
+            "image": "https://image.tmdb.org/t/p/w500/78m1Tv3suHmUryTI9VNPwKLKjHZ.jpg",
+            "id": "series-witch-hat-atelier",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:1-10"
+          },
+          {
+            "title": "Marriage Toxin",
+            "image": "https://image.tmdb.org/t/p/w500/2b1akkaoutSo3xbykjAKnEb92Rs.jpg",
+            "id": "series-marriage-toxin",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:6-10"
+          },
+          {
+            "title": "Eren the Southpaw",
+            "image": "https://image.tmdb.org/t/p/w500/AkhxnKGDcNKikr1xDP4mi1wpfEr.jpg",
+            "id": "series-eren-the-southpaw",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:5-10"
+          },
+          {
+            "title": "An Observation Log of My Fiancée Who Calls Herself a Villainess",
+            "image": "https://image.tmdb.org/t/p/w500/xlpYhXiyX52t6Dtg1fFN0CqLbK4.jpg",
+            "id": "series-an-observation-log-of-my-fiancee-who-calls-herself-a-villainess",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:6-10"
+          },
+          {
+            "title": "That Time I Got Reincarnated as a Slime",
+            "image": "https://image.tmdb.org/t/p/w500/jQb1ztdko9qc4aCdnMXShcIHXRG.jpg",
+            "id": "series-that-time-i-got-reincarnated-as-a-slime",
+            "type": "series",
+            "season": "Season 4",
+            "episodes": "EP:1-4"
+          },
+          {
+            "title": "Daemons of the Shadow Realm",
+            "image": "https://image.tmdb.org/t/p/w500/vIE1llfr1lcmzlsV4xn8vhgtlQN.jpg",
+            "id": "series-daemons-of-the-shadow-realm",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:7-10"
+          },
+          {
+            "title": "SNOWBALL EARTH",
+            "image": "https://image.tmdb.org/t/p/w500/rLin4VCC1QK7MDmeaSBZqw7SWRu.jpg",
+            "id": "series-snowball-earth",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:7-10"
+          },
+          {
+            "title": "Agents of the Four Seasons Dance of Spring",
+            "image": "https://image.tmdb.org/t/p/w500/zbzbUDLO3iTAuXDmoqtpOsrtLPi.jpg",
+            "id": "series-agents-of-the-four-seasons-dance-of-spring",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:8-11"
+          },
+          {
+            "title": "Dr. STONE",
+            "image": "https://image.tmdb.org/t/p/w500/xbZQ3fDl0y5mt0ARwfeyrgQ4JTw.jpg",
+            "id": "series-dr-stone",
+            "type": "series",
+            "season": "Season 4",
+            "episodes": "EP:33-37"
+          },
+          {
+            "title": "The Warrior Princess and the Barbaric King",
+            "image": "https://image.tmdb.org/t/p/w500/fv0Mr6ahZfmwksgDpVO46iMteA6.jpg",
+            "id": "series-the-warrior-princess-and-the-barbaric-king",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:5-9"
+          },
+          {
+            "title": "Re Zero - Starting Life in Another World",
+            "image": "https://image.tmdb.org/t/p/w500/aRwmcX36r1ZpR5Xq5mmFcpUDQ8J.jpg",
+            "id": "series-re-zero-starting-life-in-another-world",
+            "type": "series",
+            "season": "Season 4",
+            "episodes": "EP:1-4"
+          },
+          {
+            "title": "The Beginning After the End",
+            "image": "https://image.tmdb.org/t/p/w500/az0jQSgRLezKw5uHaEjPH20NexD.jpg",
+            "id": "series-the-beginning-after-the-end",
+            "type": "series",
+            "season": "Season 2",
+            "episodes": "EP:6-10"
+          },
+          {
+            "title": "Reborn as a Vending Machine, I Now Wander the Dungeon",
+            "image": "https://image.tmdb.org/t/p/w500/bY6oLDoxDyP7JNLVGjeO3udND4g.jpg",
+            "id": "series-reborn-as-a-vending-machine-i-now-wander-the-dungeon",
+            "type": "series",
+            "season": "Season 3",
+            "episodes": "EP:6-10"
+          },
+          {
+            "title": "LIAR GAME",
+            "image": "https://image.tmdb.org/t/p/w500/w8yyntTxZlDlZ2TR8kb4C92pmcO.jpg",
+            "id": "series-liar-game",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:7-10"
+          },
+          {
+            "title": "The Angel Next Door Spoils Me Rotten",
+            "image": "https://image.tmdb.org/t/p/w500/twCEEzmZZkgQIPXzw0JF350GO0P.jpg",
+            "id": "series-the-angel-next-door-spoils-me-rotten",
+            "type": "series",
+            "season": "Season 2",
+            "episodes": "EP:6-9"
+          },
+          {
+            "title": "Scum of the Brave",
+            "image": "https://image.tmdb.org/t/p/w500/kSJv65fW98dUqRD5f0ahLLYoZQN.jpg",
+            "id": "series-scum-of-the-brave",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:5-16"
+          },
+          {
+            "title": "The Ramparts of Ice",
+            "image": "https://image.tmdb.org/t/p/w500/rke9UC2QrogvxiQD9TGpbvqDosi.jpg",
+            "id": "series-the-ramparts-of-ice",
+            "type": "series",
+            "season": "Season 1",
+            "episodes": "EP:1-10"
+          }
+        ],
+        "popular_series": [
+          {
+            "title": "Naruto Shippuden",
+            "image": "https://image.tmdb.org/t/p/w500/kV27j3Nz4d5z8u6mN3EJw9RiLg2.jpg",
+            "id": "series-naruto-shippuden",
+            "type": "series"
+          },
+          {
+            "title": "Jujutsu Kaisen",
+            "image": "https://image.tmdb.org/t/p/w500/fHpKWq9ayzSk8nSwqRuaAUemRKh.jpg",
+            "id": "series-jujutsu-kaisen",
+            "type": "series"
+          },
+          {
+            "title": "Solo Leveling",
+            "image": "https://image.tmdb.org/t/p/w500/rsOApVLbIQEcNkqSlOxNPyg3FyI.jpg",
+            "id": "series-solo-leveling",
+            "type": "series"
+          },
+          {
+            "title": "One Piece",
+            "image": "https://image.tmdb.org/t/p/w500/uiIB9ctqZFbfRXXimtpmZb5dusi.jpg",
+            "id": "series-one-piece",
+            "type": "series"
+          },
+          {
+            "title": "Death Note",
+            "image": "https://image.tmdb.org/t/p/w500/tCZFfYTIwrR7n94J6G14Y4hAFU6.jpg",
+            "id": "series-death-note",
+            "type": "series"
+          },
+          {
+            "title": "Naruto",
+            "image": "https://image.tmdb.org/t/p/w500/xppeysfvDKVx775MFuH8Z9BlpMk.jpg",
+            "id": "series-naruto",
+            "type": "series"
+          },
+          {
+            "title": "Attack on Titan",
+            "image": "https://image.tmdb.org/t/p/w500/hTP1DtLGFamjfu8WqjnuQdP1n4i.jpg",
+            "id": "series-attack-on-titan",
+            "type": "series"
+          },
+          {
+            "title": "Demon Slayer",
+            "image": "https://image.tmdb.org/t/p/w500/mnpgxMLvUJYSXwydB5E1dqLukwy.jpg",
+            "id": "series-demon-slayer",
+            "type": "series"
+          },
+          {
+            "title": "Kaiju No. 8",
+            "image": "https://image.tmdb.org/t/p/w500/g4Da5pToG1E0moyaMhP4RewTBCl.jpg",
+            "id": "series-kaiju-no-8",
+            "type": "series"
+          },
+          {
+            "title": "One-Punch Man",
+            "image": "https://image.tmdb.org/t/p/w500/jbYJuxfZMpYDalkiOnBcCv9TaL.jpg",
+            "id": "series-one-punch-man",
+            "type": "series"
+          },
+          {
+            "title": "The Daily Life of the Immortal King",
+            "image": "https://image.tmdb.org/t/p/w500/fR6QmzmINCDaCJ3KDM9x3o4g6RL.jpg",
+            "id": "series-the-daily-life-of-the-immortal-king",
+            "type": "series"
+          },
+          {
+            "title": "Dan Da Dan",
+            "image": "https://image.tmdb.org/t/p/w500/6qfZAOEUFIrbUH3JvePclx1nXzz.jpg",
+            "id": "series-dan-da-dan",
+            "type": "series"
+          },
+          {
+            "title": "Spy x Family",
+            "image": "https://image.tmdb.org/t/p/w500/3r4LYFuXrg3G8fepysr4xSLWnQL.jpg",
+            "id": "series-spy-x-family",
+            "type": "series"
+          },
+          {
+            "title": "My Hero Academia",
+            "image": "https://image.tmdb.org/t/p/w500/phuYuzqWW9ru8EA3HVjE9W2Rr3M.jpg",
+            "id": "series-my-hero-academia",
+            "type": "series"
+          },
+          {
+            "title": "Tokyo Revengers",
+            "image": "https://image.tmdb.org/t/p/w500/arB3L9pZZBSzUPSC8BEv8c3X0bF.jpg",
+            "id": "series-tokyo-revengers",
+            "type": "series"
+          },
+          {
+            "title": "My Status as an Assassin Obviously Exceeds the Hero's",
+            "image": "https://image.tmdb.org/t/p/w500/oQk3aXYEa4TMd9rAYgzDpAYTU8P.jpg",
+            "id": "series-my-status-as-an-assassin-obviously-exceeds-the-heros",
+            "type": "series"
+          },
+          {
+            "title": "Classroom of the Elite",
+            "image": "https://image.tmdb.org/t/p/w500/yuHanbUUIv2UWRxxQFt9n8jtmOJ.jpg",
+            "id": "series-classroom-of-the-elite",
+            "type": "series"
+          },
+          {
+            "title": "Gachiakuta",
+            "image": "https://image.tmdb.org/t/p/w500/84LdrRRvpWk8g0EaaW7z3eKdfum.jpg",
+            "id": "series-gachiakuta",
+            "type": "series"
+          },
+          {
+            "title": "Black Clover",
+            "image": "https://image.tmdb.org/t/p/w500/kaMisKeOoTBPxPkbC3OW7Wgt6ON.jpg",
+            "id": "series-black-clover",
+            "type": "series"
+          },
+          {
+            "title": "Lord of Mysteries",
+            "image": "https://image.tmdb.org/t/p/w500/c8fHePq3yTn3WvZd4hupkHwsjm5.jpg",
+            "id": "series-lord-of-mysteries",
+            "type": "series"
+          },
+          {
+            "title": "Dr. STONE",
+            "image": "https://image.tmdb.org/t/p/w500/xbZQ3fDl0y5mt0ARwfeyrgQ4JTw.jpg",
+            "id": "series-dr-stone",
+            "type": "series"
+          },
+          {
+            "title": "My Dress-Up Darling",
+            "image": "https://image.tmdb.org/t/p/w500/A6mxBwvvv63JXZm3xXKv4SugE0L.jpg",
+            "id": "series-my-dress-up-darling",
+            "type": "series"
+          },
+          {
+            "title": "With You, Our Love Will Make It Through",
+            "image": "https://image.tmdb.org/t/p/w500/hqx5GLLcv1SuW3AAmv2ZFa7l7bF.jpg",
+            "id": "series-with-you-our-love-will-make-it-through",
+            "type": "series"
+          },
+          {
+            "title": "A Gatherer's Adventure in Isekai",
+            "image": "https://image.tmdb.org/t/p/w500/AtpIf9wnT6IaHoG31XsdqZEEf80.jpg",
+            "id": "series-a-gatherers-adventure-in-isekai",
+            "type": "series"
+          },
+          {
+            "title": "Tojima Wants to Be a Kamen Rider",
+            "image": "https://image.tmdb.org/t/p/w500/bD80ugDX7krshLcWxnqRYCOQPoo.jpg",
+            "id": "series-tojima-wants-to-be-a-kamen-rider",
+            "type": "series"
+          }
+        ],
+        "popular_movies": [
+          {
+            "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
+            "image": "https://image.tmdb.org/t/p/w500/aFRDH3P7TX61FVGpaLhKr6QiOC1.jpg",
+            "id": "movies-demon-slayer-kimetsu-no-yaiba-infinity-castle",
+            "type": "movie"
+          },
+          {
+            "title": "Jujutsu Kaisen 0",
+            "image": "https://image.tmdb.org/t/p/w500/23oJaeBh0FDk2mQ2P240PU9Xxfh.jpg",
+            "id": "movies-jujutsu-kaisen-0",
+            "type": "movie"
+          },
+          {
+            "title": "Chainsaw Man the Movie: Reze Arc",
+            "image": "https://image.tmdb.org/t/p/w500/xdzLBZjCVSEsic7m7nJc4jNJZVW.jpg",
+            "id": "movies-chainsaw-man-the-movie-reze-arc",
+            "type": "movie"
+          },
+          {
+            "title": "Your Name.",
+            "image": "https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg",
+            "id": "movies-your-name",
+            "type": "movie"
+          },
+          {
+            "title": "Black Clover: Sword of the Wizard King",
+            "image": "https://image.tmdb.org/t/p/w500/9YEGawvjaRgnyW6QVcUhFJPFDco.jpg",
+            "id": "movies-black-clover-sword-of-the-wizard-king",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon the Movie: Nobita's Earth Symphony",
+            "image": "https://image.tmdb.org/t/p/w500/1W5Kg4K27U3dx9Kxb8DaE6WFLHI.jpg",
+            "id": "movies-doraemon-the-movie-nobitas-earth-symphony",
+            "type": "movie"
+          },
+          {
+            "title": "Shinchan Movie: The Spicy Kasukabe Dancers",
+            "image": "https://image.tmdb.org/t/p/w500/1TfdgQbZXuEswjqLYlsVvhHw0Py.jpg",
+            "id": "movies-shinchan-movie-the-spicy-kasukabe-dancers",
+            "type": "movie"
+          },
+          {
+            "title": "Weathering with You",
+            "image": "https://image.tmdb.org/t/p/w500/qgrk7r1fV4IjuoeiGS5HOhXNdLJ.jpg",
+            "id": "movies-weathering-with-you",
+            "type": "movie"
+          },
+          {
+            "title": "Suzume",
+            "image": "https://image.tmdb.org/t/p/w500/yStW1TXF5s7Tbtu9KjIZEaWl6HL.jpg",
+            "id": "movies-suzume",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: Nobita's Chronicle of the Moon Exploration",
+            "image": "https://image.tmdb.org/t/p/w500/zAZ43208e643rB3pcx8jsLqc6B9.jpg",
+            "id": "movies-doraemon-nobitas-chronicle-of-the-moon-exploration",
+            "type": "movie"
+          },
+          {
+            "title": "Dragon Ball Z: Battle of Gods",
+            "image": "https://image.tmdb.org/t/p/w500/nxZEdYcHMuD8SSuwusDnK9CD2H1.jpg",
+            "id": "movies-dragon-ball-z-battle-of-gods",
+            "type": "movie"
+          },
+          {
+            "title": "HAIKYU!! The Dumpster Battle",
+            "image": "https://image.tmdb.org/t/p/w500/ntRU0OA4etGGiMMmH1Yw0bnaMdW.jpg",
+            "id": "movies-haikyu-the-dumpster-battle",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: Nobita's Treasure Island",
+            "image": "https://image.tmdb.org/t/p/w500/t1YkpYAxzD1lxNbjoZBpvYWkucO.jpg",
+            "id": "movies-doraemon-nobitas-treasure-island",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: The Record of Nobita's Parallel Journey to the West",
+            "image": "https://image.tmdb.org/t/p/w500/sEL1XbKs3UezQfApuy5CchuQn6W.jpg",
+            "id": "movies-doraemon-the-record-of-nobitas-parallel-journey-to-the-west",
+            "type": "movie"
+          },
+          {
+            "title": "Transformers Prime: Beast Hunters - Predacons Rising",
+            "image": "https://image.tmdb.org/t/p/w500/4T4pQqr2RoVgWQYtIzDGMByktwq.jpg",
+            "id": "movies-transformers-prime-beast-hunters-predacons-rising",
+            "type": "movie"
+          },
+          {
+            "title": "Spy x Family Movie: Code: White",
+            "image": "https://image.tmdb.org/t/p/w500/riv537dUuKib4KXC6Rg7CINs4xO.jpg",
+            "id": "movies-spy-x-family-movie-code-white",
+            "type": "movie"
+          },
+          {
+            "title": "Dragon Ball Super: Super Hero",
+            "image": "https://image.tmdb.org/t/p/w500/pi0iZOEHeA3ih4p1IwAG4x2DZNH.jpg",
+            "id": "movies-dragon-ball-super-super-hero",
+            "type": "movie"
+          },
+          {
+            "title": "Shinchan Movie: Rakuga Kingdom",
+            "image": "https://image.tmdb.org/t/p/w500/xWv5pUwyf96MDImATZYx0toI7T7.jpg",
+            "id": "movies-shinchan-movie-rakuga-kingdom",
+            "type": "movie"
+          },
+          {
+            "title": "Ben 10 vs. the Universe: The Movie",
+            "image": "https://image.tmdb.org/t/p/w500/34KSOJVowmkeh6G0HZJMxqdHq6s.jpg",
+            "id": "movies-ben-10-vs-the-universe-the-movie",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: Nobita's Great Adventure in the Antarctic Kachi Kochi",
+            "image": "https://image.tmdb.org/t/p/w500/hcydn0Lr3DAixZFOaUmjoqoIFU6.jpg",
+            "id": "movies-doraemon-nobitas-great-adventure-in-the-antarctic-kachi-kochi",
+            "type": "movie"
+          },
+          {
+            "title": "Shinchan Movie: Very Very Tasty Tasty",
+            "image": "https://image.tmdb.org/t/p/w500/iPN3Vy71U0B7p1R667EdifmwW1b.jpg",
+            "id": "movies-shinchan-movie-very-very-tasty-tasty",
+            "type": "movie"
+          },
+          {
+            "title": "Shinchan Movie: The Legends of Ninja Mononoke",
+            "image": "https://image.tmdb.org/t/p/w500/wyYfIWUtetlfxor8ibugKXthdKE.jpg",
+            "id": "movies-shinchan-movie-the-legends-of-ninja-mononoke",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: Nobita's New Great Adventure Into the Underworld - The Seven Magic Users",
+            "image": "https://image.tmdb.org/t/p/w500/2PlFFcAq9PcFEGgA0Znvut3kmVL.jpg",
+            "id": "movies-doraemon-nobitas-new-great-adventure-into-the-underworld-the-seven-magic-users",
+            "type": "movie"
+          },
+          {
+            "title": "Baki Hanma VS Kengan Ashura",
+            "image": "https://image.tmdb.org/t/p/w500/etbHJxil0wHvYOCmibzFLsMcl2C.jpg",
+            "id": "movies-baki-hanma-vs-kengan-ashura",
+            "type": "movie"
+          },
+          {
+            "title": "Doraemon: New Nobita's Great Demon - Peko and the Exploration Party of Five",
+            "image": "https://image.tmdb.org/t/p/w500/xKGMXQFGca4nKcO308aZ6nWz0Gc.jpg",
+            "id": "movies-doraemon-new-nobitas-great-demon-peko-and-the-exploration-party-of-five",
+            "type": "movie"
+          }
+        ]
+      },
+      "_fromCache": true
+    }
+  },
+  {
+    "url": "https://animesalt.streamindia.co.in/api/info?id=series-witch-hat-atelier",
+    "data": {
+      "success": true,
+      "anime": {
+        "id": "series-witch-hat-atelier",
+        "title": "Witch Hat Atelier",
+        "type": "series",
+        "image": "https://image.tmdb.org/t/p/w342/78m1Tv3suHmUryTI9VNPwKLKjHZ.jpg",
+        "overview": "In a world where only witches can cast magic, they must avoid being seen by ordinary people while casting. While Coco does her chores, she daydreams of becoming a witch. When a young witch named Qifrey visits her village, Coco uncovers the “absolute secret,” becomes Qifrey’s apprentice, and begins her studies. This is the story of children who encounter despair, yet reach out toward hope.",
+        "year": "2026",
+        "genres": [
+          "Drama"
+        ],
+        "languages": [],
+        "networks": [],
+        "recommendations": [
+          {
+            "title": "Mob Psycho 100",
+            "id": "series-mob-psycho-100",
+            "image": "https://image.tmdb.org/t/p/w500/vR7hwaGQ0ySRoq1WobiNRaPs4WO.jpg"
+          },
+          {
+            "title": "Black Rock Shooter: Dawn Fall",
+            "id": "series-black-rock-shooter-dawn-fall",
+            "image": "https://image.tmdb.org/t/p/w500/4BSM2fT1rOVy0Rcr22lmq4XuXjS.jpg"
+          },
+          {
+            "title": "Fire Force",
+            "id": "series-fire-force",
+            "image": "https://image.tmdb.org/t/p/w500/xwKGTFXL2kKz6P0WI23Q2ecaGOO.jpg"
+          },
+          {
+            "title": "LIAR GAME",
+            "id": "series-liar-game",
+            "image": "https://image.tmdb.org/t/p/w500/w8yyntTxZlDlZ2TR8kb4C92pmcO.jpg"
+          },
+          {
+            "title": "Clevatess",
+            "id": "series-clevatess",
+            "image": "https://image.tmdb.org/t/p/w500/31I6eGFgYbbn5FMwzxOVlZfYETW.jpg"
+          },
+          {
+            "title": "Rurouni Kenshin (2023)",
+            "id": "series-rurouni-kenshin-2023",
+            "image": "https://image.tmdb.org/t/p/w500/8KHxcHpsAaHCvIW6AT7TfzGgUbH.jpg"
+          },
+          {
+            "title": "Kunon the Sorcerer Can See",
+            "id": "series-kunon-the-sorcerer-can-see",
+            "image": "https://image.tmdb.org/t/p/w500/kGGdMa1fEwMiyyFB1AnUox5cshy.jpg"
+          },
+          {
+            "title": "Tojima Wants to Be a Kamen Rider",
+            "id": "series-tojima-wants-to-be-a-kamen-rider",
+            "image": "https://image.tmdb.org/t/p/w500/bD80ugDX7krshLcWxnqRYCOQPoo.jpg"
+          }
+        ],
+        "seasons": "1",
+        "episodes": "10",
+        "episodeDuration": "24 min",
+        "seasonsList": [
+          {
+            "season": "1",
+            "link": "https://animesalt.ac/episode/witch-hat-atelier-1x1/",
+            "episodeCount": 10,
+            "episodes": [
+              {
+                "number": 1,
+                "title": "Witch Hat Atelier 1x1",
+                "id": "episode/witch-hat-atelier-1x1",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e1.jpg"
+              },
+              {
+                "number": 2,
+                "title": "Witch Hat Atelier 1x2",
+                "id": "episode/witch-hat-atelier-1x2",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e2.jpg"
+              },
+              {
+                "number": 3,
+                "title": "Witch Hat Atelier 1x3",
+                "id": "episode/witch-hat-atelier-1x3",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e3.jpg"
+              },
+              {
+                "number": 4,
+                "title": "Witch Hat Atelier 1x4",
+                "id": "episode/witch-hat-atelier-1x4",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e4.jpg"
+              },
+              {
+                "number": 5,
+                "title": "Witch Hat Atelier 1x5",
+                "id": "episode/witch-hat-atelier-1x5",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e5.jpg"
+              },
+              {
+                "number": 6,
+                "title": "Witch Hat Atelier 1x6",
+                "id": "episode/witch-hat-atelier-1x6",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e6.jpg"
+              },
+              {
+                "number": 7,
+                "title": "Witch Hat Atelier 1x7",
+                "id": "episode/witch-hat-atelier-1x7",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e7.jpg"
+              },
+              {
+                "number": 8,
+                "title": "Witch Hat Atelier 1x8",
+                "id": "episode/witch-hat-atelier-1x8",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e8.jpg"
+              },
+              {
+                "number": 9,
+                "title": "Witch Hat Atelier 1x9",
+                "id": "episode/witch-hat-atelier-1x9",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e9.jpg"
+              },
+              {
+                "number": 10,
+                "title": "Witch Hat Atelier 1x10",
+                "id": "episode/witch-hat-atelier-1x10",
+                "image": "https://img.animesalt.ac/images-unified/thumb_2320_s1e10.jpg"
+              }
+            ]
+          }
+        ]
+      },
+      "_fromCache": true
+    }
+  }
+]

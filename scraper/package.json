@@ -1,0 +1,25 @@
+{
+  "name": "anime-scraper",
+  "version": "1.0.0",
+  "description": "Automated anime scraper for toonplay.in",
+  "main": "src/index.js",
+  "scripts": {
+    "scrape:series": "node src/index.js --type series",
+    "scrape:movies": "node src/index.js --type movies",
+    "scrape:full": "node src/index.js --type full",
+    "scrape:incremental": "node src/index.js --type incremental",
+    "test": "node src/test-connection.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "playwright": "^1.40.0",
+    "cheerio": "^1.0.0-rc.12",
+    "node-cron": "^3.0.3",
+    "winston": "^3.11.0",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
