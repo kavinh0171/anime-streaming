@@ -114,7 +114,7 @@ async function extractVideoSources(episodeSlug, browser) {
                       contentType.includes('application/x-mpegURL') ||
                       contentType.includes('video/');
                       
-      if (isVideo) {
+      if (isVideo && !u.startsWith('blob:')) {
         if (!u.includes('google-analytics') && !u.includes('analytics') && !u.includes('doubleclick')) {
           if (!streamUrls.includes(u)) {
             streamUrls.push(u);
