@@ -142,33 +142,40 @@ async function extractVideoSources(episodeSlug, browser) {
     // Append video hash to treembed URL for instant future refresh (no navigation needed)
     treembedUrl = embedSrc + '&vhash=' + videoHash;
 
-    // Step 3: Call do=getVideo API directly (instant, no JWPlayer wait)
+    // Use the CDN player URL as the permanent embed source — the player handles
+    // session, auth, HLS loading internally. This URL never expires.
+    const cdnPlayerUrl = `https://as-cdn21.top/player/index.php?data=${videoHash}`;
+    sources.push({
+      source_url: cdnPlayerUrl,
+      source_type: 'embed',
+      quality: 'HD',
+      language: 'sub',
+      order: 0
+    });
+    logger.info(`ToonStream:   Embed: ${cdnPlayerUrl.substring(0, 100)}`);
+
+    // Also try to get HLS URL via do=getVideo API (may work in some cases)
     const apiUrl = `https://as-cdn21.top/player/index.php?data=${videoHash}&do=getVideo`;
     const apiResponse = await page.request.fetch(apiUrl, {
       method: 'POST',
       headers: { 'Referer': videoHashUrl, 'X-Requested-With': 'XMLHttpRequest' }
     });
     const apiText = await apiResponse.text();
-    let hlsUrl = null;
-
     try {
       const apiJson = JSON.parse(apiText);
-      hlsUrl = apiJson.videoSource || apiJson.securedLink || null;
+      const hlsUrl = apiJson.videoSource || apiJson.securedLink || null;
+      if (hlsUrl) {
+        sources.push({
+          source_url: hlsUrl,
+          source_type: 'hls',
+          quality: 'HD',
+          language: 'sub',
+          order: 1
+        });
+        logger.info(`ToonStream:   HLS: ${hlsUrl.substring(0, 120)}`);
+      }
     } catch (e) {
-      logger.warn(`ToonStream: Failed to parse API response for ${episodeSlug}: ${apiText.substring(0, 100)}`);
-    }
-
-    if (hlsUrl) {
-      sources.push({
-        source_url: hlsUrl,
-        source_type: 'hls',
-        quality: 'HD',
-        language: 'sub',
-        order: 0
-      });
-      logger.info(`ToonStream:   HLS: ${hlsUrl.substring(0, 120)}`);
-    } else {
-      logger.warn(`ToonStream: No HLS URL in API response for ${episodeSlug}`);
+      logger.warn(`ToonStream:   API parse error: ${apiText.substring(0, 80)}`);
     }
   } catch (err) {
     logger.warn(`ToonStream: Failed to extract video for ${episodeSlug}: ${err.message}`);
@@ -303,7 +310,7 @@ async function checkExistingComplete(animeId) {
   const { data: eps } = await supabaseClient.from('episodes').select('id').eq('anime_id', animeId).limit(1);
   if (!eps || eps.length === 0) return false;
   const epIds = eps.map(e => e.id);
-  const { data: vs, error } = await supabaseClient.from('video_sources').select('id').in('episode_id', epIds).eq('source_type', 'hls').limit(1);
+  const { data: vs, error } = await supabaseClient.from('video_sources').select('id').in('episode_id', epIds).in('source_type', ['hls', 'embed']).limit(1);
   if (error) return false;
   return vs && vs.length > 0;
 }

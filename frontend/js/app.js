@@ -922,11 +922,18 @@ const App = {
     let sourceType = 'hls';
     let videoId = 'hls-video-' + epId.replace(/[^a-zA-Z0-9]/g, '');
 
-    // Use the HLS proxy to avoid CORS issues with as-cdn21.top
-    // The proxy fetches fresh HLS manifest + rewrites segment URLs server-side
-    videoUrl = '/api/hls-proxy/' + epId + '/master.m3u8';
-    sourceType = 'hls';
-    console.log('Using HLS proxy:', videoUrl);
+    // Determine best source type — prefer embed (CDN player, always works) over HLS
+    const embedSource = allSources.find(s => s.source_type === 'embed');
+    const hlsSource = allSources.find(s => s.source_type === 'hls');
+    if (embedSource) {
+      videoUrl = embedSource.source_url;
+      sourceType = 'embed';
+      console.log('Using embed source:', videoUrl.substring(0, 80));
+    } else if (hlsSource) {
+      videoUrl = '/api/hls-proxy/' + epId + '/master.m3u8';
+      sourceType = 'hls';
+      console.log('Using HLS proxy:', videoUrl);
+    }
 
     WatchHistory.add({
       slug, animeTitle: anime.title, episodeId: epId,
@@ -939,7 +946,9 @@ const App = {
     main.innerHTML = `
       <div class="player-page container">
         <div class="player-wrapper">
-          ${videoUrl ? `
+          ${videoUrl && sourceType === 'embed' ? `
+            <iframe src="${videoUrl}" allowfullscreen allow="autoplay;fullscreen" loading="lazy"></iframe>
+          ` : videoUrl && sourceType === 'hls' ? `
             <video id="${videoId}" class="hls-player" controls playsinline></video>
           ` : `
             <div class="placeholder">
