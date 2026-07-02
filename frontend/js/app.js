@@ -922,17 +922,17 @@ const App = {
     let sourceType = 'hls';
     let videoId = 'hls-video-' + epId.replace(/[^a-zA-Z0-9]/g, '');
 
-    // Determine best source type — prefer embed (CDN player, always works) over HLS
-    const embedSource = allSources.find(s => s.source_type === 'embed');
+    // Determine best source type — prefer HLS proxy (works in iframe) over embed CDN player
     const hlsSource = allSources.find(s => s.source_type === 'hls');
-    if (embedSource) {
-      videoUrl = embedSource.source_url;
-      sourceType = 'embed';
-      console.log('Using embed source:', videoUrl.substring(0, 80));
-    } else if (hlsSource) {
+    const embedSource = allSources.find(s => s.source_type === 'embed');
+    if (hlsSource) {
       videoUrl = '/api/hls-proxy/' + epId + '/master.m3u8';
       sourceType = 'hls';
       console.log('Using HLS proxy:', videoUrl);
+    } else if (embedSource) {
+      videoUrl = embedSource.source_url;
+      sourceType = 'embed';
+      console.log('Using embed source:', videoUrl.substring(0, 80));
     }
 
     WatchHistory.add({
