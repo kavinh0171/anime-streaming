@@ -253,16 +253,22 @@ const App = {
   },
 
   async renderHome(main) {
-    const [latestAnime, featured, latestEps, genres] = await Promise.all([
-      API.getAnimeList({ limit: 30, sort: 'updated_at.desc' }),
+    const [newAnime, trending, featured, latestEps, genres] = await Promise.all([
+      API.getAnimeList({ limit: 12, sort: 'created_at.desc' }),
+      API.getAnimeList({ limit: 12, sort: 'rating.desc' }),
       API.getFeatured(),
       API.getLatestEpisodes(12),
       API.getGenres(),
     ]);
 
-    const heroItems = featured.length > 0 ? featured : latestAnime.data.slice(0, 5);
-    const popular = [...latestAnime.data].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 12);
+    const heroItems = featured.length > 0 ? featured : trending.data.slice(0, 5);
     const continueWatching = WatchHistory.getRecent(8);
+
+    const kidsGenre = genres.find(g => /kids|children|cartoon/i.test(g.name));
+    let cartoonsData = [];
+    if (kidsGenre) {
+      cartoonsData = (await API.getAnimeList({ limit: 12, genre: kidsGenre.id, sort: 'updated_at.desc' })).data || [];
+    }
 
     main.innerHTML = `
       <section class="hero" id="hero">
@@ -327,22 +333,35 @@ const App = {
 
         <section class="section">
           <div class="section-header">
-            <h2>${I('icon-flame')} <span class="highlight">Latest</span> Updates</h2>
-            <a href="/browse" class="view-all" onclick="event.preventDefault();App.navigate('/browse')">View All ${I('icon-arrow-right')}</a>
+            <h2>${I('icon-flame')} <span class="highlight">Trending</span> Now</h2>
+            <a href="/browse?sort=rating.desc" class="view-all" onclick="event.preventDefault();App.navigate('/browse?sort=rating.desc')">View All ${I('icon-arrow-right')}</a>
           </div>
           <div class="anime-grid">
-            ${latestAnime.data.map(item => this.animeCardHTML(item)).join('')}
+            ${trending.data.map(item => this.animeCardHTML(item)).join('')}
           </div>
         </section>
 
         <section class="section">
           <div class="section-header">
-            <h2>${I('icon-star')} <span class="highlight">Popular</span> Anime</h2>
+            <h2>${I('icon-clock')} <span class="highlight">New</span> Releases</h2>
+            <a href="/browse" class="view-all" onclick="event.preventDefault();App.navigate('/browse')">View All ${I('icon-arrow-right')}</a>
           </div>
           <div class="anime-grid">
-            ${popular.map(item => this.animeCardHTML(item)).join('')}
+            ${newAnime.data.map(item => this.animeCardHTML(item)).join('')}
           </div>
         </section>
+
+        ${cartoonsData.length > 0 ? `
+        <section class="section">
+          <div class="section-header">
+            <h2>${I('icon-tv')} <span class="highlight">Cartoons</h2>
+            <a href="/browse?genre=${kidsGenre.id}" class="view-all" onclick="event.preventDefault();App.navigate('/browse?genre=${kidsGenre.id}')">View All ${I('icon-arrow-right')}</a>
+          </div>
+          <div class="anime-grid">
+            ${cartoonsData.map(item => this.animeCardHTML(item)).join('')}
+          </div>
+        </section>
+        ` : ''}
 
         <section class="section">
           <div class="section-header">
