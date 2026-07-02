@@ -340,7 +340,7 @@ const App = {
         <section class="section">
           <div class="section-header">
             <h2>${I('icon-clock')} <span class="highlight">New</span> Releases</h2>
-            <a href="/browse" class="view-all" onclick="event.preventDefault();App.navigate('/browse')">View All ${I('icon-arrow-right')}</a>
+            <a href="/browse?sort=created_at.desc" class="view-all" onclick="event.preventDefault();App.navigate('/browse?sort=created_at.desc')">View All ${I('icon-arrow-right')}</a>
           </div>
           <div class="anime-grid">
             ${newAnime.data.map(item => this.animeCardHTML(item)).join('')}
@@ -503,7 +503,7 @@ const App = {
     this.currentGenre = params.get('genre') || '';
     this.currentType = params.get('type') || '';
     this.currentStatus = params.get('status') || '';
-    this.currentSort = params.get('sort') || 'rating.desc';
+    this.currentSort = params.get('sort') || 'trending.desc';
     const search = params.get('search') || '';
 
     const [genres, result] = await Promise.all([
@@ -571,10 +571,13 @@ const App = {
           <div class="filter-group">
             <label>Sort</label>
             ${this.customSelectHTML('filter-sort', [
-              { value: 'rating.desc', label: 'Trending' },
+              { value: 'trending.desc', label: 'Trending' },
+              { value: 'popularity.desc', label: 'Most Popular' },
+              { value: 'rating.desc', label: 'Highest Rated' },
               { value: 'updated_at.desc', label: 'Latest' },
+              { value: 'created_at.desc', label: 'Newest' },
               { value: 'title.asc', label: 'Title A-Z' },
-              { value: 'release_year.desc', label: 'Newest' },
+              { value: 'release_year.desc', label: 'Newest Year' },
             ], this.currentSort)}
           </div>
         </div>
