@@ -48,13 +48,14 @@ async function fetchSeriesList(pageNum = 1) {
     const html = await fetchText(url);
     const $ = cheerio.load(html);
     const items = [];
-    $('li.series, article.post, .series').each((i, el) => {
+    $('li.series, li.movies, article.post, .series').each((i, el) => {
       const title = $(el).find('.entry-title').text().trim();
       const rating = parseFloat($(el).find('.vote').text().replace(/[^0-9.]/g, '') || '0');
       const image = hqImage($(el).find('img').attr('src') || '');
-      const href = $(el).find('.lnk-blk').attr('href') || $(el).find('a[href*="/series/"]').attr('href') || '';
+      const href = $(el).find('.lnk-blk').attr('href') || $(el).find('a[href*="/series/"]').attr('href') || $(el).find('a[href*="/movies/"]').attr('href') || '';
       const slug = href.split('/').filter(Boolean).pop() || '';
-      if (slug) items.push({ title, rating, image, slug, postId: $(el).attr('id')?.replace('post-', '') || '' });
+      const isMovie = href.includes('/movies/') || $(el).is('.movies, .type-movies');
+      if (slug) items.push({ title, rating, image, slug, isMovie, postId: $(el).attr('id')?.replace('post-', '') || '' });
     });
     // Deduplicate
     const seen = new Set();
@@ -125,10 +126,11 @@ async function extractVideoSources(slug, context) {
 }
 
 // --- Fetch anime detail via fetch, browser fallback ---
-async function fetchAnimeDetail(slug, context) {
+async function fetchAnimeDetail(slug, context, isMovie) {
   logger.info(`Detail: ${slug}`);
+  const prefix = isMovie ? '/movies/' : '/series/';
   try {
-    const html = await fetchText(`${BASE}/series/${slug}/`);
+    const html = await fetchText(`${BASE}${prefix}${slug}/`);
     const $ = cheerio.load(html);
     const title = $('.entry-title').first().text().trim() || slug;
     let image = $('.post-thumbnail img').first().attr('src') || '';
@@ -170,7 +172,7 @@ async function fetchAnimeDetail(slug, context) {
         });
       } else if (seasonBtns.length > 1) {
         // Multi-season AJAX — need browser to click each season button
-        return fetchAnimeDetailBrowser(slug, context);
+        return fetchAnimeDetailBrowser(slug, context, isMovie);
       } else if ($('#episode_by_temp').length > 0) {
         // Single season rendered in #episode_by_temp
         const episodes = [];
@@ -206,14 +208,15 @@ async function fetchAnimeDetail(slug, context) {
   } catch (err) {
     logger.warn(`fetchAnimeDetail fail: ${err.message}`);
     if (!context) return null;
-    return fetchAnimeDetailBrowser(slug, context);
+    return fetchAnimeDetailBrowser(slug, context, isMovie);
   }
 }
 
-async function fetchAnimeDetailBrowser(slug, context) {
+async function fetchAnimeDetailBrowser(slug, context, isMovie) {
   const page = await context.newPage();
+  const prefix = isMovie ? '/movies/' : '/series/';
   try {
-    await page.goto(`${BASE}/series/${slug}/`, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => page.waitForTimeout(2000));
+    await page.goto(`${BASE}${prefix}${slug}/`, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => page.waitForTimeout(2000));
     await page.waitForTimeout(1000);
     const title = await page.$eval('.entry-title', el => el.textContent?.trim() || slug).catch(() => slug);
     let image = await page.$eval('.post-thumbnail img', el => el.getAttribute('src') || '').catch(() => '');
@@ -337,8 +340,7 @@ async function processAnimeItem(item, context, force) {
     if (!existing.slug?.startsWith('ts-')) { logger.info(`Skipping ${item.title} (toonplay)`); return null; }
     if (!force && await checkExistingComplete(existing.id)) { return null; }
     logger.info(`Incomplete: ${item.title}`);
-    const detail = await fetchAnimeDetail(item.slug, context);
-    if (!detail?.title) return null;
+    const detail = await fetchAnimeDetail(item.slug, context, item.isMovie);
     const totalFromStream = detail.seasons.reduce((s, sea) => s + sea.episodes.length, 0);
     if (totalFromStream === 0) { logger.info(`Skipping ${item.title} (no episodes)`); return null; }
     if (totalFromStream <= (existing.total_episodes || 0)) {
@@ -378,7 +380,7 @@ async function processAnimeItem(item, context, force) {
   }
 
   logger.info(`New: ${item.title}`);
-  const detail = await fetchAnimeDetail(item.slug, context);
+  const detail = await fetchAnimeDetail(item.slug, context, item.isMovie);
   if (!detail?.title) return null;
   const totalEps = detail.seasons.reduce((s, sea) => s + sea.episodes.length, 0);
   if (totalEps === 0) { logger.info(`Skipping ${item.title} (no episodes)`); return null; }
