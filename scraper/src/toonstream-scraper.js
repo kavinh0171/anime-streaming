@@ -233,12 +233,18 @@ async function fetchAnimeDetailBrowser(slug, context) {
       return { season: parseInt(p[0]) || 1, number: parseInt(p[1]) || 0, title: li.querySelector('.entry-title')?.textContent?.trim() || `Episode ${p[1]}`, thumbnail: hqImage(thumb), slug: link };
     })).catch(() => []);
 
+    // Debug: check if #episode_by_temp exists and has LIs right after page load
+    const dbg = await page.evaluate(() => {
+      const el = document.getElementById('episode_by_temp');
+      return { exists: !!el, childCount: el ? el.children.length : 0, html: el ? el.innerHTML.substring(0, 200) : 'N/A' };
+    });
+    logger.info(`  Browser: #episode_by_temp exists=${dbg.exists}, childCount=${dbg.childCount}, html=${dbg.html.substring(0, 100)}`);
+
     const seasonBtns = await page.$$('.choose-season .aa-cnt li a');
-    logger.info(`  Browser: ${seasonBtns.length} season btns, title="${title}"`);
+    logger.info(`  Browser: ${seasonBtns.length} season btns`);
     const seasons = [];
     if (seasonBtns.length === 0) {
       const eps = await extractEps();
-      logger.info(`  Browser: no season btns, ${eps.length} eps from episode_by_temp`);
       if (eps.length > 0) seasons.push({ season_number: 1, postId: '', episodes: eps });
     } else {
       // Open the season dropdown
@@ -250,8 +256,6 @@ async function fetchAnimeDetailBrowser(slug, context) {
       for (const btn of seasonBtns) {
         const snum = parseInt(await btn.getAttribute('data-season')) || 1;
         const postId = await btn.getAttribute('data-post') || '';
-        logger.info(`  Browser: clicking season ${snum}`);
-        // Click via evaluate (native click, no visibility check)
         await page.evaluate((n) => {
           const links = document.querySelectorAll('.choose-season .aa-cnt li a');
           for (const a of links) {
@@ -263,7 +267,6 @@ async function fetchAnimeDetailBrowser(slug, context) {
         }, snum);
         await page.waitForTimeout(2000);
         const eps = await extractEps();
-        logger.info(`  Browser: season ${snum} → ${eps.length} eps (first: ${eps[0]?.num || 'none'})`);
         if (eps.length > 0) seasons.push({ season_number: snum, postId, episodes: eps });
       }
     }
