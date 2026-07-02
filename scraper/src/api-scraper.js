@@ -8,6 +8,22 @@ const PAGE_BASE = 'https://toonplay.in';
 const BROWSER_ARGS = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'];
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
+const ANILIST_API = 'https://graphql.anilist.co';
+const ANILIST_QUERY = `query($title:String){Media(search:$title,type:ANIME){trending popularity averageScore title{english romaji}}}`;
+
+async function fetchAnilistData(title) {
+  try {
+    const res = await fetch(ANILIST_API, {
+      method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({query:ANILIST_QUERY,variables:{title}}),
+      signal:AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data?.Media || null;
+  } catch { return null; }
+}
+
 async function createPage(browser) {
   const ctx = await browser.newContext({ userAgent: UA, viewport: { width: 1920, height: 1080 } });
   await ctx.addInitScript(() => { Object.defineProperty(navigator, 'webdriver', { get: () => undefined }); });
@@ -155,6 +171,7 @@ async function processAnimeItem(item, browser) {
     ? 1
     : seasonsList.reduce((sum, s) => sum + (s.episodeCount || s.episodes?.length || 0), 0);
 
+  const anilist = await fetchAnilistData(info.title);
   const animeRecord = {
     title: info.title,
     slug,
@@ -169,6 +186,8 @@ async function processAnimeItem(item, browser) {
     total_episodes: totalEps,
     duration: info.episodeDuration || '',
     source_url: `${PAGE_BASE}/watch/${slug}`,
+    popularity: anilist?.popularity || 0,
+    trending: anilist?.trending || 0,
   };
 
   const anime = await db.upsertAnime(animeRecord);

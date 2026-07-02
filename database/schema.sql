@@ -40,6 +40,8 @@ CREATE INDEX idx_anime_series_type ON anime_series(type);
 CREATE INDEX idx_anime_series_rating ON anime_series(rating DESC);
 CREATE INDEX idx_anime_series_status ON anime_series(status);
 CREATE INDEX idx_anime_series_updated ON anime_series(updated_at DESC);
+CREATE INDEX idx_anime_series_popularity ON anime_series(popularity DESC);
+CREATE INDEX idx_anime_series_trending ON anime_series(trending DESC);
 
 -- 3. ANIME-GENRE JUNCTION
 CREATE TABLE anime_genres (
@@ -165,3 +167,9 @@ CREATE POLICY "Service full access" ON episodes FOR ALL USING (true) WITH CHECK 
 CREATE POLICY "Service full access" ON video_sources FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Service full access" ON scraping_logs FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Service full access" ON featured_anime FOR ALL USING (true) WITH CHECK (true);
+
+-- ============================================================
+-- Add trending/popularity columns (run after initial schema)
+-- ============================================================
+ALTER TABLE anime_series ADD COLUMN IF NOT EXISTS popularity INTEGER DEFAULT 0;
+ALTER TABLE anime_series ADD COLUMN IF NOT EXISTS trending INTEGER DEFAULT 0;
