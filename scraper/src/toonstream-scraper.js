@@ -141,28 +141,48 @@ async function fetchAnimeDetail(slug, context) {
     $('.genres a').each((i, el) => { const t = $(el).text().trim(); if (t) genres.push(t); });
 
     const seasonBtns = $('.choose-season .aa-cnt li a');
-    // Multi-season: episodes load dynamically via AJAX, need the browser
-    if (seasonBtns.length > 0 && !$('#seasontemp-2').length) {
-      return fetchAnimeDetailBrowser(slug, context);
-    }
-    // Single season or static multi-season: extract via cheerio
     const seasons = [];
     if (seasonBtns.length > 0) {
+      // Check if any season template is rendered statically
+      let anyStatic = false;
       seasonBtns.each((i, btn) => {
         const snum = parseInt($(btn).attr('data-season')) || 1;
-        const postId = $(btn).attr('data-post') || '';
+        if ($(`#seasontemp-${snum}`).length > 0) anyStatic = true;
+      });
+      if (anyStatic) {
+        // Static multi-season: extract from #seasontemp-* elements
+        seasonBtns.each((i, btn) => {
+          const snum = parseInt($(btn).attr('data-season')) || 1;
+          const postId = $(btn).attr('data-post') || '';
+          const episodes = [];
+          $(`#seasontemp-${snum} li`).each((j, li) => {
+            const numText = $(li).find('.num-epi').text().trim();
+            const parts = numText.split(/[xX]/);
+            const href = $(li).find('.lnk-blk').attr('href') || $(li).find('a[href*="/episode/"]').attr('href') || '';
+            const slug = href.split('/').filter(Boolean).pop() || '';
+            if (!slug) return;
+            const eNum = parseInt(parts[1]) || 0;
+            episodes.push({ season: parseInt(parts[0]) || snum, number: eNum, title: $(li).find('.entry-title').text().trim() || `Episode ${eNum}`, thumbnail: hqImage($(li).find('img').attr('src') || ''), slug });
+          });
+          if (episodes.length > 0) { logger.info(`  S${snum}: ${episodes.length} eps`); seasons.push({ season_number: snum, postId, episodes }); }
+        });
+      } else if ($('#episode_by_temp').length > 0) {
+        // Single season rendered in #episode_by_temp
         const episodes = [];
-        $(`#seasontemp-${snum} li`).each((j, li) => {
+        $('#episode_by_temp li').each((j, li) => {
           const numText = $(li).find('.num-epi').text().trim();
           const parts = numText.split(/[xX]/);
           const href = $(li).find('.lnk-blk').attr('href') || $(li).find('a[href*="/episode/"]').attr('href') || '';
           const slug = href.split('/').filter(Boolean).pop() || '';
           if (!slug) return;
           const eNum = parseInt(parts[1]) || 0;
-          episodes.push({ season: parseInt(parts[0]) || snum, number: eNum, title: $(li).find('.entry-title').text().trim() || `Episode ${eNum}`, thumbnail: hqImage($(li).find('img').attr('src') || ''), slug });
+          episodes.push({ season: parseInt(parts[0]) || 1, number: eNum, title: $(li).find('.entry-title').text().trim() || `Episode ${eNum}`, thumbnail: hqImage($(li).find('img').attr('src') || ''), slug });
         });
-        if (episodes.length > 0) { logger.info(`  S${snum}: ${episodes.length} eps`); seasons.push({ season_number: snum, postId, episodes }); }
-      });
+        if (episodes.length > 0) { logger.info(`  ${episodes.length} eps`); seasons.push({ season_number: 1, postId: '', episodes }); }
+      } else {
+        // Multi-season with AJAX loading: need the browser
+        return fetchAnimeDetailBrowser(slug, context);
+      }
     } else {
       const episodes = [];
       $('#episode_by_temp li').each((j, li) => {
