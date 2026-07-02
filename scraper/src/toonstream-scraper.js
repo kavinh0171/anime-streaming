@@ -383,7 +383,11 @@ async function processAnimeItem(item, context, force) {
     const totalFromStream = detail.seasons.reduce((s, sea) => s + sea.episodes.length, 0);
     if (totalFromStream === 0) { logger.info(`Skipping ${item.title} (no episodes)`); return null; }
     if (totalFromStream <= (existing.total_episodes || 0)) {
-      // Fill missing video sources
+      if (force) {
+        // Delete all existing sources and re-extract for every episode
+        const { data: epIds } = await supabase.from('episodes').select('id').eq('anime_id', existing.id);
+        if (epIds?.length) await supabase.from('video_sources').delete().in('episode_id', epIds.map(e => e.id));
+      }
       for (const season of detail.seasons) {
         const { data: existingSeason } = await supabase.from('seasons').select('*').eq('anime_id', existing.id).eq('season_number', season.season_number).maybeSingle();
         if (!existingSeason) continue;
@@ -392,10 +396,10 @@ async function processAnimeItem(item, context, force) {
           const { data: existingEp } = await supabase.from('episodes').select('id').eq('anime_id', existing.id).eq('season_id', existingSeason.id).eq('episode_number', ep.number).maybeSingle();
           if (!existingEp) continue;
           if (ep.sourceUrl) { try { await supabase.from('video_sources').upsert({ episode_id: existingEp.id, source_url: ep.sourceUrl, source_type: 'embed', quality: 'HD', language: 'sub' }, { onConflict: 'episode_id,source_url' }); } catch {} continue; }
-          const { data: hasVs } = await supabase.from('video_sources').select('id').eq('episode_id', existingEp.id).limit(1);
-          if (!hasVs?.length) epRecords.push({ id: existingEp.id, slug: ep.slug, number: ep.number });
+          if (!force) { const { data: hasVs } = await supabase.from('video_sources').select('id').eq('episode_id', existingEp.id).limit(1); if (hasVs?.length) continue; }
+          epRecords.push({ id: existingEp.id, slug: ep.slug, number: ep.number });
         }
-        if (epRecords.length > 0) { logger.info(`  Adding ${epRecords.length} missing sources for S${season.season_number}`); await addVideoSourcesForEpisodes(epRecords, context); }
+        if (epRecords.length > 0) { logger.info(`  Fetching sources for ${epRecords.length} eps (S${season.season_number})`); await addVideoSourcesForEpisodes(epRecords, context); }
       }
       return { id: existing.id, title: item.title, added: 'videos' };
     }
