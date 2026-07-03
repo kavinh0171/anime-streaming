@@ -1,24 +1,19 @@
 {
-  "name": "anime-scraper",
-  "version": "1.0.0",
-  "description": "Automated anime scraper for toonstream.vip",
-  "main": "src/index.js",
+  "name": "anime-streaming-scraper",
+  "version": "2.0.0",
+  "private": true,
   "scripts": {
-    "scrape:full": "node src/index.js --type full",
-    "scrape:incremental": "node src/index.js --type incremental",
-    "scrape:toonstream": "node src/index.js --type toonstream",
-    "test": "node src/test-connection.js"
+    "start": "node src/index.js",
+    "scrape:full": "node src/index.js --type=full",
+    "scrape:incremental": "node src/index.js --type=incremental",
+    "scrape:toonstream": "node src/index.js --type=toonstream"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0",
-    "cheerio": "^1.2.0",
-    "dotenv": "^16.3.1",
-    "node-cron": "^3.0.3",
-    "playwright": "^1.40.0",
-    "uuid": "^9.0.0",
-    "winston": "^3.11.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "@supabase/supabase-js": "^2.110.0",
+    "axios": "^1.7.0",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.0",
+    "p-limit": "^4.0.0",
+    "winston": "^3.13.0"
   }
 }

@@ -1,4 +1,6 @@
 node_modules/
 .env
+scraper/.env
 scraper/logs/
 *.log
+scraper/scraper.log

@@ -1,86 +1,139 @@
 require('dotenv').config();
 const logger = require('./logger');
 const db = require('./supabase');
-const toonstream = require('./toonstream-scraper');
+const { discoverAllSeries } = require('./catalog');
+const { scrapeSeries } = require('./series');
+const { loadSeasonEpisodes } = require('./seasons');
+const { extractCdnHash } = require('./episodes');
+const { verifyCdnHash } = require('./sources');
+const pLimit = require('p-limit').default;
 
-function clearLine() { process.stdout.write('\r\x1b[K'); }
+const CONCURRENCY = parseInt(process.env.MAX_CONCURRENT_PAGES || '3');
 
-// Intercept logger to clear progress line before each log
-const _logInfo = logger.info.bind(logger);
-const _logWarn = logger.warn.bind(logger);
-const _logError = logger.error.bind(logger);
-logger.info = (msg) => { clearLine(); _logInfo(msg); };
-logger.warn = (msg) => { clearLine(); _logWarn(msg); };
-logger.error = (msg, ...args) => { clearLine(); _logError(msg, ...args); };
-
-let forceMode = false;
-let maxPages = 0;
-
-async function withBrowser(fn) {
-  const { chromium } = require('playwright');
-  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--blink-settings=imagesEnabled=false', '--disable-blink-features=AutomationControlled'] });
-  const ctx = await browser.newContext({
-    viewport: { width: 1920, height: 1080 },
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-  });
-  await ctx.addInitScript(() => { Object.defineProperty(navigator, 'webdriver', { get: () => undefined }); });
-  try { return await fn(ctx); } finally { await browser.close(); }
-}
-
-async function scrapeFull() {
-  const log = await db.logScrapingStart('full');
-  logger.info('=== Starting FULL scrape ===');
+async function scrapeToonstream(mode) {
+  const startTime = Date.now();
+  const logEntry = {
+    scraper_type: 'toonstream',
+    status: 'running',
+    started_at: new Date().toISOString(),
+    items_scraped: 0,
+    errors: '',
+  };
   try {
-    const totalResults = await withBrowser(ctx => toonstream.scrapeFull(ctx, maxPages, forceMode));
-    await db.logScrapingComplete(log.id, totalResults, null);
-    logger.info(`=== FULL scrape complete: ${totalResults} added/updated ===`);
-  } catch (err) {
-    logger.error('Full scrape failed:', err);
-    await db.logScrapingComplete(log.id, 0, [err.message]);
-  }
-}
+    await db.logScrape(logEntry);
+  } catch (e) { /* log table may not exist yet */ }
 
-async function scrapeIncremental() {
-  const log = await db.logScrapingStart('incremental');
-  logger.info('=== Starting INCREMENTAL scrape ===');
-  try {
-    const totalItems = await withBrowser(ctx => toonstream.scrapeIncremental(ctx, maxPages, forceMode));
-    await db.logScrapingComplete(log.id, totalItems, null);
-    logger.info(`=== Incremental done: ${totalItems} added/updated ===`);
-  } catch (err) {
-    logger.error('Incremental scrape failed:', err);
-    await db.logScrapingComplete(log.id, 0, [err.message]);
-  }
-}
+  const existingSlugs = mode === 'incremental' ? await db.getExistingSeriesSlugs() : new Set();
+  let totalAnime = 0;
+  let totalEpisodes = 0;
+  let errors = [];
 
-async function main() {
-  const args = process.argv.slice(2);
-  const typeFlag = args.find((a) => a.startsWith('--type='));
-  const type = typeFlag ? typeFlag.split('=')[1] : 'incremental';
-  const maxPagesFlag = args.find((a) => a.startsWith('--max-pages='));
-  if (maxPagesFlag) maxPages = parseInt(maxPagesFlag.split('=')[1], 10) || 0;
-  forceMode = args.includes('--force');
+  const limit = pLimit(CONCURRENCY);
 
-  try {
-    switch (type) {
-      case 'incremental':
-      case 'toonstream': await scrapeIncremental(); break;
-      case 'full': await scrapeFull(); break;
-      default: await scrapeIncremental();
+  const processSeries = async (catalogItem) => {
+    if (existingSlugs.has(catalogItem.slug) && mode !== 'full') {
+      return;
     }
-  } catch (err) {
-    logger.error('Fatal error:', err);
-    process.exit(1);
-  } finally {
-    process.exit(0);
+    const seriesInfo = await scrapeSeries(catalogItem.slug);
+    if (!seriesInfo) return;
+    try {
+      const { id: animeId } = await db.upsertAnime({
+        title: seriesInfo.title,
+        slug: seriesInfo.slug,
+        description: seriesInfo.description,
+        cover_image: seriesInfo.cover_image,
+        thumbnail: seriesInfo.thumbnail,
+        rating: seriesInfo.rating,
+        release_year: seriesInfo.release_year,
+        status: seriesInfo.status,
+        type: seriesInfo.type,
+        studio: seriesInfo.studio,
+        duration: seriesInfo.duration,
+        total_episodes: seriesInfo.total_episodes,
+      });
+      for (const genreName of seriesInfo.genres) {
+        const genreSlug = genreName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        if (!genreSlug) continue;
+        try {
+          const { id: genreId } = await db.upsertGenre(genreName, genreSlug);
+          await db.upsertAnimeGenre(animeId, genreId);
+        } catch (e) { /* genre may already exist */ }
+      }
+      for (const sd of seriesInfo.seasons) {
+        const { id: seasonId } = await db.upsertSeason({
+          anime_id: animeId,
+          season_number: sd.season_number,
+          title: `Season ${sd.season_number}`,
+        });
+        const episodes = await loadSeasonEpisodes(sd.post_id, sd.season_number);
+        for (const ep of episodes) {
+          try {
+            const source = await extractCdnHash(ep.episode_url);
+            const sourceUrl = source ? source.cdn_url : '';
+            const epSlug = ep.slug || seriesInfo.slug;
+            const epData = {
+              anime_id: animeId,
+              season_id: seasonId,
+              episode_number: ep.episode_number,
+              title: ep.title || `Episode ${ep.episode_number}`,
+              thumbnail: ep.thumbnail || '',
+              source_url: sourceUrl,
+            };
+            const { id: episodeId } = await db.upsertEpisode(epData);
+            if (source) {
+              await db.insertVideoSource({
+                episode_id: episodeId,
+                source_url: source.cdn_url,
+                source_type: 'embed',
+                quality: 'HD',
+                language: 'sub',
+              });
+              logger.info(`  Stored CDN hash: ${source.cdn_hash}`);
+            }
+            totalEpisodes++;
+          } catch (e) {
+            errors.push(`Episode ${ep.episode_number}: ${e.message}`);
+          }
+        }
+      }
+      totalAnime++;
+      logger.info(`Done: ${seriesInfo.title} (${totalAnime} series, ${totalEpisodes} eps)`);
+    } catch (e) {
+      errors.push(`${seriesInfo.slug}: ${e.message}`);
+      logger.error(`Failed ${seriesInfo.slug}: ${e.message}`);
+    }
+  };
+
+  await discoverAllSeries(
+    (item) => limit(() => processSeries(item)),
+    (page, total, count, runningTotal) => {
+      logger.info(`Catalog progress: page ${page}/${total} (${count} items, ${runningTotal} total)`);
+    }
+  );
+
+  const elapsed = ((Date.now() - startTime) / 1000 / 60).toFixed(1);
+  logger.info(`=== Scrape complete: ${totalAnime} series, ${totalEpisodes} episodes in ${elapsed}min ===`);
+  if (errors.length > 0) {
+    logger.error(`Errors (${errors.length}): ${errors.slice(0, 10).join(' | ')}`);
   }
+  try {
+    await db.supabase.from('scraping_logs').insert({
+      scraper_type: 'toonstream',
+      status: errors.length > 0 ? 'completed_with_errors' : 'completed',
+      started_at: new Date(startTime).toISOString(),
+      completed_at: new Date().toISOString(),
+      items_scraped: totalEpisodes,
+      errors: errors.slice(0, 500).join('\n'),
+    });
+  } catch (e) { /* ok */ }
 }
 
-module.exports = {
-  scrapeFull,
-  scrapeIncremental,
-};
+const mode = process.argv.includes('--type=full') ? 'full'
+  : process.argv.includes('--type=incremental') ? 'incremental'
+  : 'full';
 
-if (require.main === module) {
-  main();
-}
+logger.info(`Starting scraper in ${mode} mode`);
+scrapeToonstream(mode).catch(err => {
+  logger.error(`Fatal: ${err.message}`);
+  process.exit(1);
+});

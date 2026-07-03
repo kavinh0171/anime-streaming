@@ -4,6 +4,10 @@ const supabase = createClient(process.env.SUPABASE_URL || '', process.env.SUPABA
 
 function parseVhash(src) {
   if (!src) return null;
+  // CDN URL format: https://as-cdn21.top/video/{hash}
+  const cdn = src.match(/\/video\/([a-f0-9]{32})/);
+  if (cdn) return cdn[1];
+  // Legacy format: ?vhash=...
   const m = src.match(/[?&]vhash=([a-f0-9]+)/i);
   return m ? m[1] : null;
 }
@@ -60,9 +64,14 @@ module.exports = async (req, res) => {
     const id = path.replace('/api/video-source/', '');
     if (!id) return res.status(400).json({ error: 'Missing ID' });
     try {
-      const { data: ep } = await supabase.from('episodes').select('source_url').eq('id', id).maybeSingle();
-      if (!ep?.source_url) return res.status(404).json({ error: 'Not found' });
-      const hash = parseVhash(ep.source_url);
+      let { data: ep } = await supabase.from('episodes').select('source_url').eq('id', id).maybeSingle();
+      let sourceUrl = ep?.source_url;
+      if (!sourceUrl) {
+        const { data: vs } = await supabase.from('video_sources').select('source_url').eq('episode_id', id).limit(1).maybeSingle();
+        sourceUrl = vs?.source_url;
+      }
+      if (!sourceUrl) return res.status(404).json({ error: 'Not found' });
+      const hash = parseVhash(sourceUrl);
       if (!hash) return res.status(400).json({ error: 'No hash' });
       const cookies = await establishSession(hash);
       const url = await getHlsUrl(hash, cookies);
@@ -76,9 +85,14 @@ module.exports = async (req, res) => {
   if (m) {
     const id = m[1], resource = m[2];
     try {
-      const { data: ep } = await supabase.from('episodes').select('source_url').eq('id', id).maybeSingle();
-      if (!ep?.source_url) return res.status(404).json({ error: 'Not found' });
-      const hash = parseVhash(ep.source_url);
+      let { data: ep } = await supabase.from('episodes').select('source_url').eq('id', id).maybeSingle();
+      let sourceUrl = ep?.source_url;
+      if (!sourceUrl) {
+        const { data: vs } = await supabase.from('video_sources').select('source_url').eq('episode_id', id).limit(1).maybeSingle();
+        sourceUrl = vs?.source_url;
+      }
+      if (!sourceUrl) return res.status(404).json({ error: 'Not found' });
+      const hash = parseVhash(sourceUrl);
       if (!hash) return res.status(400).json({ error: 'No hash' });
 
       const cookies = await establishSession(hash);
