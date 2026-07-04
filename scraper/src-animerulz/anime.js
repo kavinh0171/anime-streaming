@@ -28,11 +28,6 @@ function parseMeta(meta) {
   const status = meta.status === 'RELEASING' ? 'ongoing' : (meta.status === 'FINISHED' ? 'completed' : 'ongoing');
   const format = meta.format || 'TV';
 
-  const seasonData = [];
-  if (meta.season && meta.seasonYear) {
-    seasonData.push({ season_number: 1 });
-  }
-
   return {
     title,
     slug: `anime-${meta.id}`,
@@ -44,23 +39,30 @@ function parseMeta(meta) {
     type: format === 'MOVIE' ? 'movie' : 'series',
     genres,
     total_episodes: totalEps,
-    seasons: seasonData,
   };
 }
 
-async function getAnimelokSlug(anilistId, animelokIds) {
-  for (const slug of animelokIds) {
-    try {
-      const r = await axios.get(ANIMELOK_API, {
-        params: { id: slug, ep: 1 },
-        headers: COMMON_HEADERS,
-        timeout: 10000,
-        validateStatus: () => true,
-      });
-      if (r.status === 200) return slug;
-    } catch { }
-  }
-  return animelokIds[0] || null;
+function parseAnimelokSlug(slug) {
+  const m = slug.match(/^(.+)-(\d+)x(\d+)$/);
+  if (!m) return null;
+  return { seriesName: m[1], seasonNumber: parseInt(m[2]), startEp: parseInt(m[3]) };
+}
+
+function buildSeasonRanges(animelokIds, totalEps) {
+  const parsed = animelokIds.map(s => parseAnimelokSlug(s)).filter(Boolean);
+  if (parsed.length === 0) return [];
+
+  parsed.sort((a, b) => a.seasonNumber - b.seasonNumber);
+
+  return parsed.map((p, i) => {
+    const endEp = i < parsed.length - 1 ? parsed[i + 1].startEp - 1 : (totalEps === Infinity ? Infinity : totalEps);
+    return {
+      slug: animelokIds[i],
+      seasonNumber: p.seasonNumber,
+      startEp: p.startEp,
+      endEp,
+    };
+  });
 }
 
 async function fetchEpisodeSource(slug, epNum) {
@@ -84,22 +86,33 @@ async function scrapeAnime(anilistId, animelokIds) {
   const meta = await fetchMetadata(anilistId);
   const info = parseMeta(meta);
 
-  if (info.total_episodes === 0) return null;
-
-  const slug = await getAnimelokSlug(anilistId, animelokIds);
-  if (!slug) return null;
+  const seasonRanges = buildSeasonRanges(animelokIds, info.total_episodes || Infinity);
+  if (seasonRanges.length === 0) return null;
 
   const episodes = [];
-  for (let ep = 1; ep <= info.total_episodes; ep++) {
-    const source = await fetchEpisodeSource(slug, ep);
-    if (!source) break;
-    episodes.push({
-      episode_number: ep,
-      season_number: 1,
-      title: `Episode ${ep}`,
-      source_url: source.url,
-      source_hash: source.hash,
-    });
+  const seasons = [];
+
+  for (const sr of seasonRanges) {
+    const testEp = await fetchEpisodeSource(sr.slug, sr.startEp);
+    if (!testEp) continue;
+
+    seasons.push({ season_number: sr.seasonNumber });
+    const seasonEps = [];
+
+    const maxEp = sr.endEp === Infinity ? sr.startEp + 999 : sr.endEp;
+    for (let ep = sr.startEp; ep <= maxEp; ep++) {
+      const source = await fetchEpisodeSource(sr.slug, ep);
+      if (!source) break;
+      seasonEps.push({
+        episode_number: ep,
+        season_number: sr.seasonNumber,
+        title: `Episode ${ep}`,
+        source_url: source.url,
+        source_hash: source.hash,
+      });
+    }
+
+    episodes.push(...seasonEps);
   }
 
   if (episodes.length === 0) return null;
@@ -107,6 +120,7 @@ async function scrapeAnime(anilistId, animelokIds) {
   return {
     ...info,
     total_episodes: episodes.length,
+    seasons,
     episodes,
   };
 }

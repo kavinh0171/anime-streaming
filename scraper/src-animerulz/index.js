@@ -90,7 +90,8 @@ async function main() {
             continue;
           }
 
-          for (const ep of result.episodes) {
+          const seasonEps = result.episodes.filter(ep => ep.season_number === sd.season_number);
+          for (const ep of seasonEps) {
             try {
               const { id: episodeId } = await db.upsertEpisode({
                 anime_id: animeId,
