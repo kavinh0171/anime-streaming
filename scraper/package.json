@@ -7,7 +7,9 @@
     "scrape:full": "node src/index.js --type=full",
     "scrape:incremental": "node src/index.js --type=incremental",
     "scrape:animesalt": "node src/index.js --type=full",
-    "scrape:toonstream": "node src/index.js --type=full --site=toonstream"
+    "scrape:toonstream": "node src/index.js --type=full --site=toonstream",
+    "scrape:animerulz": "node src-animerulz/index.js",
+    "scrape:animerulz:test": "node src-animerulz/index.js --max-pages=2"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.0",
