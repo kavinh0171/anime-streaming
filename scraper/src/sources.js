@@ -38,4 +38,18 @@ async function verifyCdnHash(hash) {
   }
 }
 
-module.exports = { verifyCdnHash };
+async function resolveShortIcu(url) {
+  try {
+    const resp = await axios.get(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+      maxRedirects: 5,
+      timeout: 10000,
+    });
+    return resp.request?.res?.responseUrl || url;
+  } catch (err) {
+    logger.warn(`  short.icu resolve failed: ${err.message}`);
+    return url;
+  }
+}
+
+module.exports = { verifyCdnHash, resolveShortIcu };

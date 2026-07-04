@@ -798,19 +798,17 @@ const App = {
       <div class="container">
         <div class="detail-body">
           <div class="main-content">
-            ${seasons.length > 1 ? `
-              <div class="season-tabs" id="season-tabs">
-                ${seasons.sort((a, b) => a.season_number - b.season_number).map(s => `
-                  <button class="season-tab ${s.id === currentSeason?.id ? 'active' : ''}" data-season-id="${s.id}">${s.title || `Season ${s.season_number}`}</button>
-                `).join('')}
-              </div>
-              <div class="season-select">
-                ${this.customSelectHTML('season-select', seasons.sort((a, b) => a.season_number - b.season_number).map(s => ({
-                  value: s.id,
-                  label: s.title || `Season ${s.season_number}`,
-                })), currentSeason?.id)}
-              </div>
-            ` : ''}
+            <div class="season-tabs" id="season-tabs">
+              ${seasons.sort((a, b) => a.season_number - b.season_number).map(s => `
+                <button class="season-tab ${s.id === currentSeason?.id ? 'active' : ''}" data-season-id="${s.id}">${s.title || `Season ${s.season_number}`}</button>
+              `).join('')}
+            </div>
+            <div class="season-select">
+              ${this.customSelectHTML('season-select', seasons.sort((a, b) => a.season_number - b.season_number).map(s => ({
+                value: s.id,
+                label: s.title || `Season ${s.season_number}`,
+              })), currentSeason?.id)}
+            </div>
             <div class="episode-list" id="episode-list">
               ${seasonEpisodes.map(ep => {
                 const watched = WatchHistory.isWatched(ep.id);
@@ -947,14 +945,14 @@ const App = {
       <div class="player-page container">
         <div class="player-wrapper">
           ${videoUrl && sourceType === 'embed' ? `
-            <iframe src="${videoUrl}" sandbox="allow-scripts allow-same-origin" allowfullscreen allow="autoplay;fullscreen" loading="lazy"></iframe>
+            <iframe src="${videoUrl}" sandbox="allow-scripts allow-same-origin" allowfullscreen allow="autoplay;fullscreen" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${I('icon-alert')}<h3>Source unavailable</h3><p>The video source for this episode is no longer available.</p></div>'"></iframe>
           ` : videoUrl && sourceType === 'hls' ? `
             <video id="${videoId}" class="hls-player" controls playsinline></video>
           ` : `
             <div class="placeholder">
               ${I('icon-film')}
               <h3>No video source available</h3>
-              <p>This episode has no video source yet. Run the scraper to populate it.</p>
+              <p>This episode has no video source yet.</p>
             </div>
           `}
         </div>
@@ -977,19 +975,17 @@ const App = {
           <div class="section-header">
             <h2>${I('icon-tv')} <span class="highlight">Episodes</span></h2>
           </div>
-          ${seasons.length > 1 ? `
-            <div class="season-tabs" id="player-season-tabs">
-              ${seasons.sort((a, b) => a.season_number - b.season_number).map(s => `
-                <button class="season-tab ${s.id === currentSeasonId ? 'active' : ''}" data-season-id="${s.id}">${s.title || `Season ${s.season_number}`}</button>
-              `).join('')}
-            </div>
-            <div class="season-select">
-              ${this.customSelectHTML('player-season-select', seasons.sort((a, b) => a.season_number - b.season_number).map(s => ({
-                value: s.id,
-                label: s.title || `Season ${s.season_number}`,
-              })), currentSeasonId)}
-            </div>
-          ` : ''}
+          <div class="season-tabs" id="player-season-tabs">
+            ${seasons.sort((a, b) => a.season_number - b.season_number).map(s => `
+              <button class="season-tab ${s.id === currentSeasonId ? 'active' : ''}" data-season-id="${s.id}">${s.title || `Season ${s.season_number}`}</button>
+            `).join('')}
+          </div>
+          <div class="season-select">
+            ${this.customSelectHTML('player-season-select', seasons.sort((a, b) => a.season_number - b.season_number).map(s => ({
+              value: s.id,
+              label: s.title || `Season ${s.season_number}`,
+            })), currentSeasonId)}
+          </div>
           <div class="episode-list" id="player-episode-list">
             ${seasonEps.map(ep => {
               const watched = WatchHistory.isWatched(ep.id);

@@ -68,6 +68,7 @@ const API = (() => {
         'Prefer': 'count=exact',
       };
       const response = await fetch(url, { headers });
+      if (response.status === 416) return { data: [], count: 0 };
       if (!response.ok) throw new Error(`API error: ${response.status}`);
       const data = await response.json();
       const range = response.headers.get('content-range');

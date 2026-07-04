@@ -6,7 +6,8 @@
     "start": "node src/index.js",
     "scrape:full": "node src/index.js --type=full",
     "scrape:incremental": "node src/index.js --type=incremental",
-    "scrape:toonstream": "node src/index.js --type=toonstream"
+    "scrape:animesalt": "node src/index.js --type=full",
+    "scrape:toonstream": "node src/index.js --type=full --site=toonstream"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.0",

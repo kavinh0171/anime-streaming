@@ -2,27 +2,42 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const { sleep } = require('./http');
 const logger = require('./logger');
+const config = require('./config');
 
-const BASE = 'https://toonstream.vip';
+const BASE = config.base;
+const AJAX_METHOD = config.seasonAjaxMethod;
 
 async function loadSeasonEpisodes(postId, seasonNum) {
   if (!postId) return [];
   const url = `${BASE}/wp-admin/admin-ajax.php`;
   logger.info(`  Season ${seasonNum} (post=${postId})`);
   try {
-    const resp = await axios.post(url,
-      new URLSearchParams({ action: 'action_select_season', post: postId, season: String(seasonNum) }),
-      {
+    let html;
+    if (AJAX_METHOD === 'get') {
+      const resp = await axios.get(url, {
+        params: { action: 'action_select_season', post: postId, season: String(seasonNum) },
         headers: {
           'User-Agent': 'Mozilla/5.0',
-          'Content-Type': 'application/x-www-form-urlencoded',
           'Referer': `${BASE}/series/`,
         },
         timeout: 15000,
-      }
-    );
+      });
+      html = typeof resp.data === 'string' ? resp.data : resp.data?.data || '';
+    } else {
+      const resp = await axios.post(url,
+        new URLSearchParams({ action: 'action_select_season', post: postId, season: String(seasonNum) }),
+        {
+          headers: {
+            'User-Agent': 'Mozilla/5.0',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Referer': `${BASE}/series/`,
+          },
+          timeout: 15000,
+        }
+      );
+      html = typeof resp.data === 'string' ? resp.data : resp.data?.data || '';
+    }
     await sleep(500);
-    const html = typeof resp.data === 'string' ? resp.data : resp.data?.data || '';
     const $ = cheerio.load(html);
     const episodes = [];
     $('a[href*="/episode/"]').each((_, el) => {

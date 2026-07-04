@@ -1,5 +1,7 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const logger = require('./logger');
+const config = require('./config');
 const db = require('./supabase');
 const { discoverAllSeries } = require('./catalog');
 const { scrapeSeries } = require('./series');
@@ -10,10 +12,10 @@ const pLimit = require('p-limit').default;
 
 const CONCURRENCY = parseInt(process.env.MAX_CONCURRENT_PAGES || '3');
 
-async function scrapeToonstream(mode) {
+async function scrapeSite(mode) {
   const startTime = Date.now();
   const logEntry = {
-    scraper_type: 'toonstream',
+    scraper_type: config.SITE,
     status: 'running',
     started_at: new Date().toISOString(),
     items_scraped: 0,
@@ -34,7 +36,7 @@ async function scrapeToonstream(mode) {
     if (existingSlugs.has(catalogItem.slug) && mode !== 'full') {
       return;
     }
-    const seriesInfo = await scrapeSeries(catalogItem.slug);
+    const seriesInfo = await scrapeSeries(catalogItem.slug, catalogItem.type || 'series');
     if (!seriesInfo) return;
     try {
       const { id: animeId } = await db.upsertAnime({
@@ -70,7 +72,6 @@ async function scrapeToonstream(mode) {
           try {
             const source = await extractCdnHash(ep.episode_url);
             const sourceUrl = source ? source.cdn_url : '';
-            const epSlug = ep.slug || seriesInfo.slug;
             const epData = {
               anime_id: animeId,
               season_id: seasonId,
@@ -88,7 +89,21 @@ async function scrapeToonstream(mode) {
                 quality: 'HD',
                 language: 'sub',
               });
-              logger.info(`  Stored CDN hash: ${source.cdn_hash}`);
+              logger.info(`  Stored ${source.provider || 'embed'}: ${source.cdn_hash || source.cdn_url.substring(0, 60)}`);
+              if (source.languages && source.languages.length > 0) {
+                for (const lang of source.languages) {
+                  if (lang.url) {
+                    await db.insertVideoSource({
+                      episode_id: episodeId,
+                      source_url: lang.url,
+                      source_type: 'embed',
+                      quality: 'HD',
+                      language: lang.language,
+                    });
+                    logger.info(`  Stored ${lang.label || lang.language} source: ${lang.url.substring(0, 50)}`);
+                  }
+                }
+              }
             }
             totalEpisodes++;
           } catch (e) {
@@ -118,7 +133,7 @@ async function scrapeToonstream(mode) {
   }
   try {
     await db.supabase.from('scraping_logs').insert({
-      scraper_type: 'toonstream',
+      scraper_type: config.SITE,
       status: errors.length > 0 ? 'completed_with_errors' : 'completed',
       started_at: new Date(startTime).toISOString(),
       completed_at: new Date().toISOString(),
@@ -132,8 +147,8 @@ const mode = process.argv.includes('--type=full') ? 'full'
   : process.argv.includes('--type=incremental') ? 'incremental'
   : 'full';
 
-logger.info(`Starting scraper in ${mode} mode`);
-scrapeToonstream(mode).catch(err => {
+logger.info(`Starting scraper for "${config.SITE}" in ${mode} mode`);
+scrapeSite(mode).catch(err => {
   logger.error(`Fatal: ${err.message}`);
   process.exit(1);
 });
